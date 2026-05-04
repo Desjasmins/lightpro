@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Color — Glow accent</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:#000;font-family:var(--font-sans);color:#fff;}
+  .wrap{padding:24px;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#9A9A9A;margin:0 0 14px;font-weight:500;}
+  .grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px;}
+  .hero{aspect-ratio:1.6;border-radius:8px;background:radial-gradient(circle at 30% 40%, oklch(0.78 0.13 70) 0%, oklch(0.62 0.14 55) 35%, #000 75%);position:relative;overflow:hidden;}
+  .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%, transparent 0%, transparent 30%, rgba(0,0,0,0.5) 100%);}
+  .sw{aspect-ratio:1.6;border-radius:8px;}
+  .meta{margin-top:6px;font-size:11px;color:#C8C8C6;}
+  .meta b{display:block;color:#fff;font-weight:600;font-size:12px;}
+  .label{position:absolute;left:14px;bottom:12px;z-index:2;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;}
+</style></head>
+<body><div class="wrap">
+  <p class="ttl">Warm tungsten — single brand accent</p>
+  <div class="grid">
+    <div><div class="hero"><span class="label">Glow</span></div><div class="meta"><b>Glow</b>oklch(.78 .13 70) · #E8A33D</div></div>
+    <div><div class="sw" style="background:oklch(0.86 0.09 75)"></div><div class="meta"><b>Glow soft</b>#F2C476</div></div>
+    <div><div class="sw" style="background:oklch(0.62 0.14 55)"></div><div class="meta"><b>Glow deep</b>#B6722A</div></div>
+  </div>
+</div></body></html>

@@ -1,0 +1,274 @@
+{
+  "Nav": {
+    "solutions": "Nos solutions",
+    "sectors": "Secteurs",
+    "about": "À propos",
+    "estimate": "Démarrer une estimation",
+    "languageToggle": "EN"
+  },
+  "Hero": {
+    "eyebrow": "MISE AUX NORMES & CONVERSION DEL",
+    "title": "Éclairage sportif municipal, conçu pour durer",
+    "subtitle": "Obtenez une évaluation budgétaire pour la mise aux normes et la conversion DEL de vos terrains sportifs en moins de 15 minutes, sans visite terrain.",
+    "cta": "Démarrer une estimation",
+    "ctaSecondary": "Voir nos solutions"
+  },
+  "WhoAreWe": {
+    "eyebrow": "QUI SOMMES-NOUS",
+    "title": "Design Meets Engineering",
+    "body": "Lightbase conçoit et fabrique à Montréal des luminaires architecturaux DEL pour les espaces sportifs, institutionnels et industriels. Notre gamme Lightpro OM est pensée pour les grandes hauteurs, les vents forts et les hivers québécois — une décennie de garantie, plus de 100 000 heures de durée de vie."
+  },
+  "Solutions": {
+    "eyebrow": "NOS SOLUTIONS",
+    "title": "La gamme Lightpro OM",
+    "subtitle": "Modules disponibles immédiatement, certifiés DLC Premium, IP66, conçus pour 277-480 V.",
+    "om300": {
+      "name": "Lightpro OM300",
+      "tagline": "Le standard du sport municipal — Simple, Double, Quadruple."
+    },
+    "om400": {
+      "name": "Lightpro OM400",
+      "tagline": "Module Simple disponible. Double et Quadruple : fin 2025."
+    },
+    "specs": {
+      "lifetime": "L70 > 100 000 h",
+      "warranty": "Garantie 10 ans",
+      "efficiency": "Jusqu'à 185 lm/W",
+      "temperature": "-40°C à +50°C"
+    }
+  },
+  "Sectors": {
+    "eyebrow": "SECTEURS",
+    "title": "Pensé pour vos terrains",
+    "education": "Éducation",
+    "healthcare": "Santé",
+    "hospitality": "Hôtellerie",
+    "agriculture": "Horticulture",
+    "industrial": "Industriel",
+    "public": "Espaces publics",
+    "residential": "Résidentiel",
+    "retail": "Commerce"
+  },
+  "CTA": {
+    "title": "Estimez votre projet en 15 minutes",
+    "subtitle": "Outil d'estimation budgétaire pour la conversion DEL — luminaires, accessoires et ingénierie. Hors installation.",
+    "button": "Commencer maintenant"
+  },
+  "Footer": {
+    "address": "Montréal, Québec, Canada",
+    "phone": "Téléphone",
+    "email": "Courriel",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de confidentialité (Loi 25)",
+    "terms": "Conditions d'utilisation",
+    "dataRequest": "Demande d'accès / suppression"
+  },
+  "Estimation": {
+    "title": "Outil d'estimation",
+    "subtitle": "Mise aux normes et conversion DEL — éclairage sportif municipal",
+    "stepLabel": "Étape {current} sur {total}",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Générer l'estimation",
+    "saveDraft": "Enregistrer le brouillon",
+    "steps": {
+      "project": "Projet",
+      "address": "Adresse",
+      "fields": "Terrains",
+      "poles": "Fûts",
+      "configuration": "Configuration",
+      "summary": "Bilan"
+    },
+    "step1": {
+      "title": "Informations du projet",
+      "subtitle": "Identifiez le projet et la personne de contact.",
+      "projectName": "Nom du projet",
+      "projectNamePh": "Ex. Parc Lafontaine — phase 2",
+      "municipality": "Municipalité",
+      "municipalityPh": "Ex. Ville de Montréal",
+      "contactName": "Nom du contact",
+      "contactNamePh": "Prénom Nom",
+      "contactEmail": "Courriel du contact",
+      "contactEmailPh": "exemple@municipalite.qc.ca"
+    },
+    "step2": {
+      "title": "Adresse du parc",
+      "subtitle": "Saisissez l'adresse civique du parc à équiper. La carte affiche la vue satellite pour validation visuelle.",
+      "address": "Adresse civique",
+      "addressPh": "Ex. 3819 Avenue Calixa-Lavallée, Montréal, QC",
+      "mapHint": "Astuce : sur Google Maps, clic-droit > Mesurer une distance pour estimer la surface d'un terrain."
+    },
+    "step3": {
+      "title": "Terrains sportifs",
+      "subtitle": "Ajoutez chaque terrain à équiper. La classe IES détermine les niveaux d'éclairement requis.",
+      "addField": "Ajouter un terrain",
+      "removeField": "Retirer",
+      "fieldName": "Nom du terrain",
+      "fieldNamePh": "Ex. Terrain de soccer principal",
+      "sportType": "Activité",
+      "iesClass": "Niveau / Classe IES",
+      "surfaceM2": "Surface (m²)",
+      "surfaceM2Hint": "Mesurée sur Google Maps ou plan municipal."
+    },
+    "step4": {
+      "title": "Fûts existants",
+      "subtitle": "Pour chaque terrain, saisissez les fûts existants. Le scénario de remplacement 1-pour-1 utilise ces données.",
+      "addPole": "Ajouter un fût",
+      "removePole": "Retirer",
+      "poleIndex": "N°",
+      "type": "Type",
+      "heightM": "Hauteur (m)",
+      "mountType": "Montage",
+      "nbCrossarms": "Traverses",
+      "nbExistingFixtures": "Luminaires existants",
+      "existingPowerW": "Puissance unitaire (W)",
+      "voltage": "Tension"
+    },
+    "step5": {
+      "title": "Configuration produit",
+      "subtitle": "Pour chaque terrain, choisissez le module et les options Lightpro OM.",
+      "module": "Module",
+      "power": "Puissance",
+      "optic": "Distribution optique",
+      "cct": "Température de couleur",
+      "cri": "CRI",
+      "voltage": "Tension d'alimentation",
+      "visor": "Visière",
+      "bracket": "Braquette",
+      "control": "Contrôle Smart Lighting",
+      "withRegulation": "Régulation et mesure (admissible HQ-OSE)",
+      "hqOseEligible": "Mon organisme est admissible au programme HQ-OSE 5.1"
+    },
+    "step6": {
+      "title": "Bilan budgétaire",
+      "subtitle": "Estimation pour les luminaires, accessoires, contrôle et ingénierie. Hors installation.",
+      "scenarioA": "Scénario A — Remplacement 1 pour 1",
+      "scenarioB": "Scénario B — Conformité IES RP-6-22",
+      "verdictGo": "Faisable avec les fûts existants",
+      "verdictNoGo": "Étude détaillée requise — fûts supplémentaires nécessaires",
+      "totalLuminaires": "Sous-total luminaires",
+      "totalEngineering": "Heures d'ingénierie",
+      "totalAccessories": "Accessoires",
+      "subtotal": "Sous-total",
+      "rebate": "Subvention HQ-OSE 5.1",
+      "totalProject": "Total projet (hors installation)",
+      "energySavings": "Économies d'énergie estimées",
+      "ghgReduction": "Réduction GES estimée",
+      "kwhYear": "kWh/an",
+      "kgYear": "kg CO₂/an",
+      "includedTitle": "Ce que ce bilan inclut",
+      "notIncludedTitle": "Ce que ce bilan n'inclut pas",
+      "included": [
+        "Luminaires Lightpro OM (qté, modèle, puissance)",
+        "Accessoires (visières, braquettes, laser)",
+        "Système de contrôle Smart Lighting",
+        "Heures d'ingénierie et supervision",
+        "Subvention HQ-OSE 5.1 (si applicable)"
+      ],
+      "notIncluded": [
+        "Coût d'installation (grue, électricien, raccordement)",
+        "Démontage de l'éclairage existant",
+        "Travaux d'alimentation électrique au site",
+        "Mise à niveau ou remplacement des fûts existants",
+        "Études géotechniques, structurelles, environnementales",
+        "Taxes (TPS / TVQ — affichées séparément)"
+      ],
+      "disclaimer": "Cette estimation est générée automatiquement à des fins budgétaires préliminaires et porte uniquement sur la fourniture des luminaires, accessoires, système de contrôle et heures d'ingénierie. Les coûts d'installation (grue, électricien, raccordement, démontage de l'existant, etc.) ne sont pas inclus et doivent être obtenus séparément auprès d'un installateur certifié. Les quantités, configurations, niveaux d'éclairement et prix peuvent varier suite à une visite technique, une étude photométrique détaillée (AGI32 ou équivalent), une vérification de la capacité portante des fûts existants, et une analyse des contraintes spécifiques du site. Lightbase ne peut être tenue responsable d'écarts entre cette estimation et l'offre commerciale finale.",
+      "downloadPdf": "Télécharger le PDF",
+      "requestQuote": "Demander un devis officiel",
+      "restart": "Recommencer"
+    }
+  },
+  "Sports": {
+    "BASEBALL": "Baseball",
+    "SOCCER": "Soccer",
+    "FOOTBALL": "Football",
+    "TENNIS": "Tennis",
+    "BASKETBALL": "Basketball",
+    "PATINOIRE": "Patinoire",
+    "PATINOIRE_DEK_HOCKEY": "Patinoire / Dek Hockey",
+    "PATINOIRE_BASKETBALL": "Patinoire / Basketball",
+    "PETANQUE": "Pétanque",
+    "PISCINE": "Piscine",
+    "SKATE_PARC": "Skate Parc",
+    "BADMINTON": "Badminton",
+    "STATIONNEMENT": "Stationnement",
+    "JEUX_ENFANTS": "Jeux d'enfants",
+    "GLISSADE": "Glissade hivernale",
+    "ECLAIRAGE_SERVICE": "Éclairage de service",
+    "AUTRE": "Autre"
+  },
+  "IesClasses": {
+    "CLASS_I": "Classe I — Professionnel",
+    "CLASS_II": "Classe II — Semi-pro",
+    "CLASS_III": "Classe III — Compétitif",
+    "CLASS_IV": "Classe IV — Récréatif / amateur",
+    "NA": "NA — Service / aucun niveau"
+  },
+  "PoleTypes": {
+    "BOIS": "Bois",
+    "ACIER": "Acier",
+    "BETON": "Béton",
+    "ALUMINIUM": "Aluminium",
+    "MURAL": "Installation murale",
+    "AUTRE": "Autre"
+  },
+  "MountTypes": {
+    "TRAVERSE": "Projecteur sur traverse",
+    "FUT": "Projecteur fixé sur fût"
+  },
+  "Modules": {
+    "SIMPLE": "Simple",
+    "DOUBLE": "Double",
+    "QUADRUPLE": "Quadruple"
+  },
+  "Powers": {
+    "M200": "M200 — 200 W",
+    "M300": "M300 — 300 W",
+    "M400": "M400 — 400 W",
+    "M600": "M600 — 600 W",
+    "M800": "M800 — 800 W",
+    "M1200": "M1200 — 1200 W"
+  },
+  "Optics": {
+    "D15": "15° — Longue portée",
+    "D30": "30° — Standard sportif",
+    "D60": "60° — Surfaces larges et basses",
+    "D90": "90° — Aire de jeu rapprochée"
+  },
+  "Ccts": {
+    "K3000": "3000 K — Chaud",
+    "K4000": "4000 K — Neutre",
+    "K5700": "5700 K — Froid"
+  },
+  "Cris": { "CRI70": "CRI 70", "CRI80": "CRI 80" },
+  "Voltages": {
+    "V120": "120 V",
+    "V220": "220 V",
+    "V277": "277 V",
+    "V347": "347 V",
+    "V480": "480 V"
+  },
+  "Visors": {
+    "VN": "VN — Aucune visière",
+    "VSS": "VSS — Visière courte",
+    "VLS": "VLS — Visière longue",
+    "VN_VN": "VN + VN",
+    "VSS_VSS": "VSS + VSS",
+    "VSS_VN": "VSS + VN",
+    "VLS_VSS": "VLS + VSS",
+    "VLS_VN": "VLS + VN"
+  },
+  "Brackets": {
+    "BTU": "BTU — En U",
+    "BTUE": "BTUE — En U Tenon",
+    "BTR": "BTR — Bras",
+    "BTE": "BTE — Bras avec extension"
+  },
+  "Controls": {
+    "BASE": "Contrôle de base (tout-en-un)",
+    "SMART_POLE": "Smart Pole",
+    "SMART_POWERBOX": "Smart Powerbox",
+    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)"
+  }
+}

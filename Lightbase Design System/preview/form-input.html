@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Form input</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;font-family:var(--font-sans);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;}
+  .panel{padding:26px 28px;}
+  .dark{background:#000;color:#fff;}
+  .light{background:#F5F5F4;color:#0A0A0A;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;margin:0 0 12px;}
+  .dark .ttl{color:#9A9A9A;}.light .ttl{color:#3A3A3A;}
+  label{display:block;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;opacity:.7;}
+  input,textarea{width:100%;box-sizing:border-box;font:400 14px/1.4 var(--font-sans);padding:12px 0;background:transparent;border:0;border-bottom:1px solid currentColor;color:inherit;outline:none;transition:border-color .2s;}
+  .dark input{border-bottom-color:rgba(255,255,255,0.3);}
+  .dark input:focus{border-bottom-color:#fff;}
+  .light input{border-bottom-color:rgba(0,0,0,0.2);}
+  .light input:focus{border-bottom-color:#0A0A0A;}
+  small{font-size:10px;opacity:.55;display:block;margin-top:6px;}
+</style></head><body>
+<div class="grid">
+  <div class="panel dark">
+    <p class="ttl">Underline input · dark</p>
+    <label>Email</label>
+    <input value="info@lightbase.ca" />
+    <small>1px hairline · focus → solid · no fill, no radius</small>
+  </div>
+  <div class="panel light">
+    <p class="ttl">Underline input · light</p>
+    <label>Project name</label>
+    <input placeholder="Tell us about your project" />
+    <small>uppercase eyebrow label · transparent field</small>
+  </div>
+</div></body></html>

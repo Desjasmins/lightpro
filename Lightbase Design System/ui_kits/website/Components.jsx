@@ -1,0 +1,214 @@
+import React from "react";
+
+export function Nav({ scrolled = true }) {
+  return (
+    <nav className={"lb-nav" + (scrolled ? " lb-nav--scrolled" : "")}>
+      <div className="lb-nav__inner">
+        <a className="lb-nav__brand" href="#">
+          <img src="../../assets/logo-light.png" alt="Lightbase" />
+        </a>
+        <ul className="lb-nav__links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Collections</a></li>
+          <li><a href="#">Sectors</a></li>
+          <li><a href="#">Technologies</a></li>
+          <li><a href="#">Services</a></li>
+          <li><a href="#">About</a></li>
+        </ul>
+        <a className="lb-pill" href="#">Let's Connect</a>
+      </div>
+    </nav>
+  );
+}
+
+export function Hero({ onConnect }) {
+  return (
+    <header className="lb-hero">
+      <div className="lb-hero__bg" style={{ backgroundImage: "url('../../assets/lightring.jpg')" }} />
+      <div className="lb-hero__veil" />
+      <div className="lb-hero__copy">
+        <h1 className="lb-display">Design Meets<br/>Engineering</h1>
+        <p className="lb-lede">Join us in creating a brighter future with our eco-friendly lighting options.</p>
+        <button className="lb-pill lb-pill--lg" onClick={onConnect}>Let's Connect</button>
+      </div>
+    </header>
+  );
+}
+
+export function WhoAreWe() {
+  return (
+    <section className="lb-section lb-section--light">
+      <div className="lb-container">
+        <p className="lb-eyebrow lb-eyebrow--dark">Who Are We</p>
+        <div className="lb-who">
+          <h2 className="lb-h2 lb-on-light">Innovative Lighting Solutions</h2>
+          <p className="lb-p lb-on-light">
+            Lightbase is a leading innovator in the lighting industry, dedicated to creating cutting-edge
+            lighting solutions that enhance spaces and experiences. We pride ourselves on our commitment
+            to sustainability, creativity, and quality, aiming to illuminate the world with products that
+            combine functionality with aesthetic appeal.
+          </p>
+        </div>
+        <div className="lb-who__img" style={{ backgroundImage: "url('../../assets/about-image.png')" }} />
+      </div>
+    </section>
+  );
+}
+
+const COLLECTIONS = [
+  { name: "Lightbar",    tag: "State of the art horticulture lighting",         img: "lightbar.png"    },
+  { name: "Lightcell",   tag: "Power-packed lighting in every cell",            img: "lightcell.jpg"   },
+  { name: "Lightcove",   tag: "Seamless molding integration for cove lighting", img: "lightcove.png"   },
+  { name: "Lightdeco",   tag: "Bespoke lighting designed for your vision",      img: "lightdeco.jpg"   },
+  { name: "Lightengine", tag: "Suspended shades lighting, crafted for your vision", img: "lightengine.png" },
+  { name: "Lightline",   tag: "A perfect line of light",                        img: "lightline.png"   },
+  { name: "Lightloom",   tag: "Elegant cylindrical lighting that elevates any space", img: "lightloom.png" },
+  { name: "Lightpro",    tag: "Game-ready lighting for athletic excellence",    img: "lightpro.jpg"    },
+  { name: "Lightrail",   tag: "One rail, limitless lighting possibilities",     img: "lightrail.png"   },
+  { name: "Lightring",   tag: "Capture attention with every glowing circle",    img: "lightring.jpg"   },
+  { name: "Skylight",    tag: "Redefining daylight with sleek skylights",       img: "skylight.png"    },
+];
+
+export function CollectionsGrid({ onSelect }) {
+  return (
+    <section className="lb-section lb-section--dark">
+      <div className="lb-container">
+        <header className="lb-section__head">
+          <h2 className="lb-h2">Premium Collections</h2>
+          <a href="#" className="lb-pill lb-pill--ghost">See all collections</a>
+        </header>
+        <div className="lb-grid">
+          {COLLECTIONS.map((c) => (
+            <button key={c.name} className="lb-card" onClick={() => onSelect && onSelect(c)}>
+              <div className="lb-card__img"><div style={{ backgroundImage: `url('../../assets/${c.img}')` }} /></div>
+              <h3 className="lb-card__name">{c.name}</h3>
+              <p className="lb-card__tag">{c.tag}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const SECTORS = [
+  { name: "Education",        img: "sector-education.png"   },
+  { name: "Healthcare",       img: "sector-healthcare.jpg"  },
+  { name: "Hospitality",      img: "sector-hospitality.png" },
+  { name: "Indoor Agriculture", img: "sector-agriculture.jpg" },
+  { name: "Industrial",       img: "sector-industrial.jpg"  },
+  { name: "Public Area",      img: "sector-public.png"      },
+  { name: "Residential",      img: "sector-residential.jpg" },
+  { name: "Retail",           img: "sector-retail.png"      },
+];
+
+export function Sectors() {
+  return (
+    <section className="lb-section lb-section--light">
+      <div className="lb-container">
+        <header className="lb-section__head lb-section__head--dark">
+          <h2 className="lb-h2 lb-on-light">Sectors</h2>
+        </header>
+        <div className="lb-sectors">
+          {SECTORS.map((s) => (
+            <a key={s.name} className="lb-sector" href="#">
+              <div className="lb-sector__img" style={{ backgroundImage: `url('../../assets/${s.img}')` }} />
+              <h3 className="lb-sector__name lb-on-light">{s.name}</h3>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CTA({ onConnect }) {
+  return (
+    <section className="lb-cta" style={{ backgroundImage: "url('../../assets/cta-bg.jpg')" }}>
+      <div className="lb-cta__veil" />
+      <div className="lb-cta__copy">
+        <h2 className="lb-h2">Ready to start a project?</h2>
+        <p className="lb-lede">Collaborate with us to create lighting solutions that set your project apart.</p>
+        <button className="lb-pill lb-pill--lg" onClick={onConnect}>Let's Connect</button>
+      </div>
+    </section>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="lb-footer">
+      <div className="lb-container">
+        <img className="lb-footer__logo" src="../../assets/logo-light.png" alt="Lightbase" />
+        <div className="lb-footer__cols">
+          <div>
+            <h4>Quick Links</h4>
+            <ul><li><a href="#">Collections</a></li><li><a href="#">Sectors</a></li><li><a href="#">Technologies</a></li><li><a href="#">Services</a></li></ul>
+          </div>
+          <div>
+            <h4>Company</h4>
+            <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li><li><a href="#">Careers</a></li></ul>
+          </div>
+          <div>
+            <h4>Legal</h4>
+            <ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <ul>
+              <li><a href="#">10871 Av. Salk, Montreal,<br/>Quebec, Canada, H1G 6M7</a></li>
+              <li><a href="tel:+15146005140">+ (1) 514 600 5140</a></li>
+              <li><a href="mailto:info@lightbase.ca">info@lightbase.ca</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr className="lb-footer__rule" />
+        <p className="lb-footer__copy">Copyright 2024 © Lightbase, All Rights Reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+export function ConnectModal({ open, onClose }) {
+  if (!open) return null;
+  return (
+    <div className="lb-modal" onClick={onClose}>
+      <div className="lb-modal__panel" onClick={(e) => e.stopPropagation()}>
+        <button className="lb-modal__close" onClick={onClose} aria-label="Close">×</button>
+        <p className="lb-eyebrow">Let's Connect</p>
+        <h2 className="lb-h2">Tell us about your project.</h2>
+        <p className="lb-p">We design, engineer, and manufacture lighting in Montréal.</p>
+        <form className="lb-form" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
+          <label>Name<input type="text" defaultValue="" placeholder="Your full name" /></label>
+          <label>Email<input type="email" defaultValue="" placeholder="you@studio.com" /></label>
+          <label>Project<textarea rows={3} placeholder="A few words about scope, sector, timing"/></label>
+          <button className="lb-pill lb-pill--solid lb-pill--lg" type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export function ProductDetail({ product, onBack }) {
+  if (!product) return null;
+  return (
+    <section className="lb-product">
+      <div className="lb-product__hero" style={{ backgroundImage: `url('../../assets/${product.img}')` }}>
+        <button className="lb-product__back" onClick={onBack}>← Back to collections</button>
+      </div>
+      <div className="lb-container lb-product__body">
+        <p className="lb-eyebrow">Collection</p>
+        <h1 className="lb-h1 lb-on-light">{product.name}</h1>
+        <p className="lb-lede lb-on-light">{product.tag}.</p>
+        <p className="lb-p lb-on-light">
+          {product.name} is engineered for performance and crafted for design — fixtures with the precision of
+          an instrument and the calm of a finished space. Specifications, mountings and finishes available on request.
+        </p>
+        <div className="lb-product__cta">
+          <button className="lb-pill lb-pill--dark">Request specs</button>
+          <button className="lb-pill lb-pill--ghost-dark">Download PDF</button>
+        </div>
+      </div>
+    </section>
+  );
+}

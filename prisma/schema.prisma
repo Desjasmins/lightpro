@@ -1,0 +1,260 @@
+// Lightbase Estimation — Prisma schema
+// Source model: prompt-outil-estimation-lightbase-v4 §6
+// Each Project = 1 lead (anonymous estimation submission)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Locale {
+  FR
+  EN
+}
+
+enum SportType {
+  BASEBALL
+  SOCCER
+  FOOTBALL
+  TENNIS
+  BASKETBALL
+  PATINOIRE
+  PATINOIRE_DEK_HOCKEY
+  PATINOIRE_BASKETBALL
+  PETANQUE
+  PISCINE
+  SKATE_PARC
+  BADMINTON
+  STATIONNEMENT
+  JEUX_ENFANTS
+  GLISSADE
+  ECLAIRAGE_SERVICE
+  AUTRE
+}
+
+enum IesClass {
+  CLASS_I
+  CLASS_II
+  CLASS_III
+  CLASS_IV
+  NA
+}
+
+enum PoleType {
+  BOIS
+  ACIER
+  BETON
+  ALUMINIUM
+  MURAL
+  AUTRE
+}
+
+enum MountType {
+  TRAVERSE
+  FUT
+}
+
+enum Voltage {
+  V120
+  V220
+  V347
+  V480
+  V277
+}
+
+enum Module {
+  SIMPLE
+  DOUBLE
+  QUADRUPLE
+}
+
+enum Power {
+  M200
+  M300
+  M400
+  M600
+  M800
+  M1200
+}
+
+enum Optic {
+  D15
+  D30
+  D60
+  D90
+}
+
+enum Cct {
+  K3000
+  K4000
+  K5700
+}
+
+enum Cri {
+  CRI70
+  CRI80
+}
+
+enum Visor {
+  VN
+  VSS
+  VLS
+  VN_VN
+  VSS_VSS
+  VSS_VN
+  VLS_VSS
+  VLS_VN
+}
+
+enum Bracket {
+  BTU
+  BTUE
+  BTR
+  BTE
+}
+
+enum ControlArchitecture {
+  BASE
+  SMART_POLE
+  SMART_POWERBOX
+  SMART_ZONE
+}
+
+enum GoNoGo {
+  GO
+  NOGO
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  locale       Locale   @default(FR)
+
+  name         String
+  municipality String
+  contactName  String
+  contactEmail String
+
+  address      String
+  lat          Float?
+  lng          Float?
+
+  hqOseEligible Boolean @default(false)
+
+  fields       Field[]
+  result       Result?
+
+  status       String   @default("DRAFT") // DRAFT | SUBMITTED | EMAILED
+
+  @@index([contactEmail])
+  @@index([createdAt])
+}
+
+model Field {
+  id              String     @id @default(cuid())
+  projectId       String
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name            String
+  sportType       SportType
+  iesClass        IesClass
+
+  surfaceM2       Float
+  perimeterGeoJson Json?
+  infieldGeoJson  Json?     // baseball only
+  outfieldGeoJson Json?     // baseball only
+  screenshotS3Key String?
+
+  poles           Pole[]
+  configuration   Configuration?
+
+  @@index([projectId])
+}
+
+model Pole {
+  id              String     @id @default(cuid())
+  fieldId         String
+  field           Field      @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  index           Int        // display order / pole number
+  type            PoleType
+  heightM         Float
+  mountType       MountType
+  nbCrossarms     Int        @default(0)
+  nbExistingFixtures Int     @default(0)
+  existingPowerW  Int
+  voltage         Voltage
+
+  positionX       Float?     // normalized 0..1 on screenshot
+  positionY       Float?
+
+  @@index([fieldId])
+}
+
+model Configuration {
+  id              String     @id @default(cuid())
+  fieldId         String     @unique
+  field           Field      @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  module          Module
+  power           Power
+  optic           Optic      @default(D30)
+  cct             Cct        @default(K4000)
+  cri             Cri        @default(CRI70)
+  voltage         Voltage    @default(V480)
+  visor           Visor      @default(VN)
+  bracket         Bracket    @default(BTU)
+  withRegulation  Boolean    @default(true)
+  control         ControlArchitecture @default(BASE)
+  accessories     Json?      // string[] for laser, parafoudre, capteurs, etc.
+}
+
+model Result {
+  id              String     @id @default(cuid())
+  projectId       String     @unique
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Scenario A — 1-for-1 replacement
+  scenarioATotalQty       Int
+  scenarioATotalPowerW    Int
+  scenarioATotalPriceCad  Float
+
+  // Scenario B — IES RP-6-22 compliance (simplified in MVP)
+  scenarioBTotalQty       Int?
+  scenarioBTotalPowerW    Int?
+  scenarioBTotalPriceCad  Float?
+
+  verdictGoNoGo           GoNoGo
+
+  engineeringHours        Float
+  supervisionHours        Float
+  engineeringCostCad      Float
+
+  hqOseRebateCad          Float    @default(0)
+  totalCostBeforeRebateCad Float
+  totalCostAfterRebateCad  Float
+
+  energySavingsKwhYear    Float
+  ghgReductionKgYear      Float
+
+  // Detailed breakdown stored as JSON for PDF/email later
+  breakdown               Json
+}
+
+model Lead {
+  // Marketing leads from landing CTA "Let's connect" (separate from estimations)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  email     String
+  name      String?
+  org       String?
+  message   String?
+  source    String   @default("landing")
+
+  @@index([email])
+}

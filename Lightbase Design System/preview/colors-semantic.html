@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Semantic colors</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:#fff;font-family:var(--font-sans);}
+  .wrap{padding:22px 24px;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#3A3A3A;margin:0 0 14px;font-weight:500;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .panel{border-radius:8px;padding:18px;}
+  .dark{background:#000;color:#fff;}
+  .light{background:#F5F5F4;color:#0A0A0A;border:1px solid var(--hairline-on-light);}
+  .row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;}
+  .row:last-child{margin-bottom:0;}
+  .chip{width:28px;height:28px;border-radius:4px;flex-shrink:0;}
+  .name{font-weight:600;}
+  .val{opacity:.6;font-feature-settings:"tnum";}
+  h4{margin:0 0 12px;font-size:12px;font-weight:600;letter-spacing:0.04em;}
+</style></head><body>
+<div class="wrap">
+  <p class="ttl">Semantic foreground tokens</p>
+  <div class="grid">
+    <div class="panel dark">
+      <h4>On dark</h4>
+      <div class="row"><span class="chip" style="background:#fff"></span><span class="name">fg-1</span><span class="val">#FFFFFF · primary</span></div>
+      <div class="row"><span class="chip" style="background:rgba(255,255,255,0.72)"></span><span class="name">fg-2</span><span class="val">72% · body</span></div>
+      <div class="row"><span class="chip" style="background:rgba(255,255,255,0.52)"></span><span class="name">fg-3</span><span class="val">52% · meta</span></div>
+      <div class="row"><span class="chip" style="background:rgba(255,255,255,0.32)"></span><span class="name">fg-4</span><span class="val">32% · disabled</span></div>
+    </div>
+    <div class="panel light">
+      <h4>On light</h4>
+      <div class="row"><span class="chip" style="background:#0A0A0A"></span><span class="name">on-light-1</span><span class="val">#0A0A0A</span></div>
+      <div class="row"><span class="chip" style="background:#2A2A2A"></span><span class="name">on-light-2</span><span class="val">#2A2A2A</span></div>
+      <div class="row"><span class="chip" style="background:#9A9A9A"></span><span class="name">on-light-3</span><span class="val">#9A9A9A</span></div>
+      <div class="row"><span class="chip" style="background:rgba(0,0,0,0.10);border:1px solid rgba(0,0,0,0.10)"></span><span class="name">hairline</span><span class="val">10% black</span></div>
+    </div>
+  </div>
+</div></body></html>

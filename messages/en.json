@@ -1,0 +1,274 @@
+{
+  "Nav": {
+    "solutions": "Solutions",
+    "sectors": "Sectors",
+    "about": "About",
+    "estimate": "Start an estimate",
+    "languageToggle": "FR"
+  },
+  "Hero": {
+    "eyebrow": "STANDARDS COMPLIANCE & LED CONVERSION",
+    "title": "Municipal sports lighting, built to last",
+    "subtitle": "Get a budget evaluation for the standards-compliance and LED conversion of your sports fields in under 15 minutes — no on-site visit required.",
+    "cta": "Start an estimate",
+    "ctaSecondary": "See our solutions"
+  },
+  "WhoAreWe": {
+    "eyebrow": "WHO WE ARE",
+    "title": "Design Meets Engineering",
+    "body": "Lightbase designs and manufactures architectural LED fixtures in Montréal for sports, institutional and industrial spaces. The Lightpro OM range is engineered for tall poles, high winds and Quebec winters — with a 10-year warranty and over 100,000 hours of life."
+  },
+  "Solutions": {
+    "eyebrow": "OUR SOLUTIONS",
+    "title": "The Lightpro OM range",
+    "subtitle": "Modules available now, DLC Premium certified, IP66, designed for 277-480 V.",
+    "om300": {
+      "name": "Lightpro OM300",
+      "tagline": "The municipal sports standard — Single, Double, Quadruple."
+    },
+    "om400": {
+      "name": "Lightpro OM400",
+      "tagline": "Single module available. Double and Quadruple: late 2025."
+    },
+    "specs": {
+      "lifetime": "L70 > 100,000 h",
+      "warranty": "10-year warranty",
+      "efficiency": "Up to 185 lm/W",
+      "temperature": "-40°C to +50°C"
+    }
+  },
+  "Sectors": {
+    "eyebrow": "SECTORS",
+    "title": "Built for your fields",
+    "education": "Education",
+    "healthcare": "Healthcare",
+    "hospitality": "Hospitality",
+    "agriculture": "Horticulture",
+    "industrial": "Industrial",
+    "public": "Public spaces",
+    "residential": "Residential",
+    "retail": "Retail"
+  },
+  "CTA": {
+    "title": "Estimate your project in 15 minutes",
+    "subtitle": "Budget estimation tool for LED conversion — fixtures, accessories and engineering. Installation excluded.",
+    "button": "Start now"
+  },
+  "Footer": {
+    "address": "Montréal, Quebec, Canada",
+    "phone": "Phone",
+    "email": "Email",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy policy (Law 25)",
+    "terms": "Terms of use",
+    "dataRequest": "Data access / deletion request"
+  },
+  "Estimation": {
+    "title": "Estimation tool",
+    "subtitle": "Standards compliance and LED conversion — municipal sports lighting",
+    "stepLabel": "Step {current} of {total}",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Generate estimate",
+    "saveDraft": "Save draft",
+    "steps": {
+      "project": "Project",
+      "address": "Address",
+      "fields": "Fields",
+      "poles": "Poles",
+      "configuration": "Configuration",
+      "summary": "Summary"
+    },
+    "step1": {
+      "title": "Project information",
+      "subtitle": "Identify the project and the contact person.",
+      "projectName": "Project name",
+      "projectNamePh": "e.g. Lafontaine Park — phase 2",
+      "municipality": "Municipality",
+      "municipalityPh": "e.g. City of Montréal",
+      "contactName": "Contact name",
+      "contactNamePh": "First Last",
+      "contactEmail": "Contact email",
+      "contactEmailPh": "name@municipality.qc.ca"
+    },
+    "step2": {
+      "title": "Park address",
+      "subtitle": "Enter the civic address of the park to be equipped. The map shows a satellite view for visual confirmation.",
+      "address": "Civic address",
+      "addressPh": "e.g. 3819 Calixa-Lavallée Ave, Montréal, QC",
+      "mapHint": "Tip: in Google Maps, right-click > Measure distance to estimate field surface."
+    },
+    "step3": {
+      "title": "Sports fields",
+      "subtitle": "Add each field to be equipped. The IES class determines required illuminance levels.",
+      "addField": "Add a field",
+      "removeField": "Remove",
+      "fieldName": "Field name",
+      "fieldNamePh": "e.g. Main soccer field",
+      "sportType": "Activity",
+      "iesClass": "Level / IES Class",
+      "surfaceM2": "Surface (m²)",
+      "surfaceM2Hint": "Measured on Google Maps or municipal blueprint."
+    },
+    "step4": {
+      "title": "Existing poles",
+      "subtitle": "For each field, list the existing poles. The 1-for-1 replacement scenario uses this data.",
+      "addPole": "Add a pole",
+      "removePole": "Remove",
+      "poleIndex": "#",
+      "type": "Type",
+      "heightM": "Height (m)",
+      "mountType": "Mount",
+      "nbCrossarms": "Crossarms",
+      "nbExistingFixtures": "Existing fixtures",
+      "existingPowerW": "Unit power (W)",
+      "voltage": "Voltage"
+    },
+    "step5": {
+      "title": "Product configuration",
+      "subtitle": "For each field, choose the Lightpro OM module and options.",
+      "module": "Module",
+      "power": "Power",
+      "optic": "Optic distribution",
+      "cct": "Color temperature",
+      "cri": "CRI",
+      "voltage": "Supply voltage",
+      "visor": "Visor",
+      "bracket": "Bracket",
+      "control": "Smart Lighting control",
+      "withRegulation": "Regulation and metering (HQ-OSE eligible)",
+      "hqOseEligible": "My organization is eligible for HQ-OSE 5.1"
+    },
+    "step6": {
+      "title": "Budget summary",
+      "subtitle": "Estimate for fixtures, accessories, control and engineering. Installation excluded.",
+      "scenarioA": "Scenario A — 1-for-1 replacement",
+      "scenarioB": "Scenario B — IES RP-6-22 compliance",
+      "verdictGo": "Feasible with existing poles",
+      "verdictNoGo": "Detailed study required — additional poles needed",
+      "totalLuminaires": "Fixtures subtotal",
+      "totalEngineering": "Engineering hours",
+      "totalAccessories": "Accessories",
+      "subtotal": "Subtotal",
+      "rebate": "HQ-OSE 5.1 rebate",
+      "totalProject": "Project total (installation excluded)",
+      "energySavings": "Estimated energy savings",
+      "ghgReduction": "Estimated GHG reduction",
+      "kwhYear": "kWh/year",
+      "kgYear": "kg CO₂/year",
+      "includedTitle": "What this summary includes",
+      "notIncludedTitle": "What this summary does not include",
+      "included": [
+        "Lightpro OM fixtures (qty, model, power)",
+        "Accessories (visors, brackets, laser)",
+        "Smart Lighting control system",
+        "Engineering and supervision hours",
+        "HQ-OSE 5.1 rebate (if applicable)"
+      ],
+      "notIncluded": [
+        "Installation costs (crane, electrician, hookup)",
+        "Removal of existing fixtures",
+        "Site electrical supply work",
+        "Upgrade or replacement of existing poles",
+        "Geotechnical, structural, environmental studies",
+        "Taxes (GST / QST — shown separately)"
+      ],
+      "disclaimer": "This estimate is generated automatically for preliminary budgeting purposes and covers only the supply of fixtures, accessories, control system and engineering hours. Installation costs (crane, electrician, hookup, removal of existing fixtures, etc.) are not included and must be obtained separately from a certified installer. Quantities, configurations, illuminance levels and prices may vary following a technical visit, a detailed photometric study (AGI32 or equivalent), a load capacity verification of the existing poles, and an analysis of site-specific constraints. Lightbase cannot be held responsible for differences between this estimate and the final commercial offer.",
+      "downloadPdf": "Download PDF",
+      "requestQuote": "Request an official quote",
+      "restart": "Start over"
+    }
+  },
+  "Sports": {
+    "BASEBALL": "Baseball",
+    "SOCCER": "Soccer",
+    "FOOTBALL": "Football",
+    "TENNIS": "Tennis",
+    "BASKETBALL": "Basketball",
+    "PATINOIRE": "Ice rink",
+    "PATINOIRE_DEK_HOCKEY": "Ice rink / Dek Hockey",
+    "PATINOIRE_BASKETBALL": "Ice rink / Basketball",
+    "PETANQUE": "Pétanque",
+    "PISCINE": "Pool",
+    "SKATE_PARC": "Skate park",
+    "BADMINTON": "Badminton",
+    "STATIONNEMENT": "Parking",
+    "JEUX_ENFANTS": "Playground",
+    "GLISSADE": "Winter slide",
+    "ECLAIRAGE_SERVICE": "Service lighting",
+    "AUTRE": "Other"
+  },
+  "IesClasses": {
+    "CLASS_I": "Class I — Professional",
+    "CLASS_II": "Class II — Semi-pro",
+    "CLASS_III": "Class III — Competitive",
+    "CLASS_IV": "Class IV — Recreational / amateur",
+    "NA": "NA — Service / no level"
+  },
+  "PoleTypes": {
+    "BOIS": "Wood",
+    "ACIER": "Steel",
+    "BETON": "Concrete",
+    "ALUMINIUM": "Aluminum",
+    "MURAL": "Wall mount",
+    "AUTRE": "Other"
+  },
+  "MountTypes": {
+    "TRAVERSE": "Floodlight on crossarm",
+    "FUT": "Floodlight fixed on pole"
+  },
+  "Modules": {
+    "SIMPLE": "Single",
+    "DOUBLE": "Double",
+    "QUADRUPLE": "Quadruple"
+  },
+  "Powers": {
+    "M200": "M200 — 200 W",
+    "M300": "M300 — 300 W",
+    "M400": "M400 — 400 W",
+    "M600": "M600 — 600 W",
+    "M800": "M800 — 800 W",
+    "M1200": "M1200 — 1200 W"
+  },
+  "Optics": {
+    "D15": "15° — Long throw",
+    "D30": "30° — Standard sport",
+    "D60": "60° — Wide low surfaces",
+    "D90": "90° — Close-range play area"
+  },
+  "Ccts": {
+    "K3000": "3000 K — Warm",
+    "K4000": "4000 K — Neutral",
+    "K5700": "5700 K — Cool"
+  },
+  "Cris": { "CRI70": "CRI 70", "CRI80": "CRI 80" },
+  "Voltages": {
+    "V120": "120 V",
+    "V220": "220 V",
+    "V277": "277 V",
+    "V347": "347 V",
+    "V480": "480 V"
+  },
+  "Visors": {
+    "VN": "VN — No visor",
+    "VSS": "VSS — Short visor",
+    "VLS": "VLS — Long visor",
+    "VN_VN": "VN + VN",
+    "VSS_VSS": "VSS + VSS",
+    "VSS_VN": "VSS + VN",
+    "VLS_VSS": "VLS + VSS",
+    "VLS_VN": "VLS + VN"
+  },
+  "Brackets": {
+    "BTU": "BTU — U-bracket",
+    "BTUE": "BTUE — U-Tenon",
+    "BTR": "BTR — Arm",
+    "BTE": "BTE — Arm with extension"
+  },
+  "Controls": {
+    "BASE": "Base control (all-in-one)",
+    "SMART_POLE": "Smart Pole",
+    "SMART_POWERBOX": "Smart Powerbox",
+    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)"
+  }
+}

@@ -1,0 +1,242 @@
+/* =========================================================
+   Lightbase Design System — colors, type, spacing, motion
+   Source of truth for tokens. Import in every artifact.
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* ---------- COLOR ---------- */
+  /* Brand neutrals */
+  --lb-black:        #000000;
+  --lb-ink:          #0A0A0A;
+  --lb-ink-2:        #1A1A1A;
+  --lb-ink-3:        #2A2A2A;
+  --lb-ink-4:        #3A3A3A;
+
+  --lb-fog:          #9A9A9A;   /* mid neutral */
+  --lb-mist:         #C8C8C6;
+  --lb-cloud:        #D4D4D2;
+  --lb-paper:        #F5F5F4;   /* alt surface */
+  --lb-bone:         #FAFAF8;
+  --lb-white:        #FFFFFF;
+
+  /* Brand accent — warm tungsten glow */
+  --lb-glow:         oklch(0.78 0.13 70);   /* ≈ #E8A33D */
+  --lb-glow-soft:    oklch(0.86 0.09 75);   /* ≈ #F2C476 */
+  --lb-glow-deep:    oklch(0.62 0.14 55);   /* ≈ #B6722A */
+
+  /* Semantic surfaces */
+  --bg:              var(--lb-black);
+  --bg-alt:          var(--lb-paper);
+  --bg-card:         var(--lb-ink);
+  --bg-elev:         var(--lb-ink-2);
+
+  /* Semantic ink */
+  --fg:              var(--lb-white);
+  --fg-1:            var(--lb-white);
+  --fg-2:            rgba(255,255,255,0.72);
+  --fg-3:            rgba(255,255,255,0.52);
+  --fg-4:            rgba(255,255,255,0.32);
+
+  --fg-on-light-1:   var(--lb-ink);
+  --fg-on-light-2:   var(--lb-ink-3);
+  --fg-on-light-3:   var(--lb-fog);
+
+  /* Semantic borders / hairlines */
+  --hairline-on-dark:  rgba(255,255,255,0.14);
+  --hairline-on-light: rgba(0,0,0,0.10);
+
+  /* Status (used sparingly, never on marketing) */
+  --status-ok:       #4F8F58;
+  --status-warn:     #C99A3A;
+  --status-err:      #B0463A;
+
+  /* ---------- TYPE ---------- */
+  --font-sans:  "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:  ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Type scale (clamp for fluid display) */
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-md:   18px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  40px;
+  --text-4xl:  56px;
+  --text-5xl:  clamp(56px, 7vw, 88px);
+  --text-6xl:  clamp(72px, 9vw, 120px);
+
+  --leading-tight: 1.05;
+  --leading-snug:  1.2;
+  --leading-body:  1.55;
+  --leading-loose: 1.7;
+
+  --tracking-display: -0.03em;
+  --tracking-head:    -0.02em;
+  --tracking-body:    0em;
+  --tracking-eyebrow: 0.18em;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semi:    600;
+  --weight-bold:    700;
+
+  /* ---------- SPACING (8-base) ---------- */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   24px;
+  --space-6:   32px;
+  --space-7:   48px;
+  --space-8:   64px;
+  --space-9:   96px;
+  --space-10:  128px;
+  --space-11:  192px;
+
+  /* ---------- RADII ---------- */
+  --radius-none: 0px;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 999px;
+
+  /* ---------- SHADOW ---------- */
+  /* Lightbase is largely shadow-flat. Use sparingly. */
+  --shadow-none: 0 0 0 0 rgba(0,0,0,0);
+  --shadow-1:    0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2:    0 6px 16px rgba(0,0,0,0.10);
+  --shadow-3:    0 24px 60px rgba(0,0,0,0.18);
+  --shadow-glow: 0 0 0 4px oklch(0.78 0.13 70 / 0.22);
+
+  /* ---------- MOTION ---------- */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:   140ms;
+  --dur-base:   240ms;
+  --dur-slow:   480ms;
+  --dur-xslow:  640ms;
+
+  /* ---------- LAYOUT ---------- */
+  --container-max: 1440px;
+  --container-pad: clamp(20px, 4vw, 64px);
+  --grid-gutter:   32px;
+}
+
+/* ============================================================
+   Semantic element styles — drop in to inherit Lightbase rules
+   ============================================================ */
+
+.lb-root, .lb-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: var(--fg-1);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.lb-h1, .lb-display {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-5xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.lb-h2 {
+  font-weight: var(--weight-semi);
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-head);
+  text-wrap: balance;
+}
+
+.lb-h3 {
+  font-weight: var(--weight-semi);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-head);
+}
+
+.lb-h4 {
+  font-weight: var(--weight-semi);
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+}
+
+.lb-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.lb-lede {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-loose);
+  color: var(--fg-2);
+  text-wrap: pretty;
+  max-width: 62ch;
+}
+
+.lb-p {
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: var(--fg-2);
+  text-wrap: pretty;
+  max-width: 62ch;
+}
+
+.lb-tagline {
+  font-size: var(--text-md);
+  font-weight: var(--weight-regular);
+  color: var(--fg-2);
+  line-height: 1.4;
+}
+
+/* ---------- Button: pill, white-on-transparent inverts on hover ---------- */
+.lb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--lb-white);
+  background: transparent;
+  color: var(--lb-white);
+  font: 500 var(--text-sm)/1 var(--font-sans);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease-out-quint),
+              color var(--dur-base) var(--ease-out-quint),
+              transform var(--dur-fast) var(--ease-out-quint);
+}
+.lb-btn:hover  { background: var(--lb-white); color: var(--lb-black); }
+.lb-btn:active { transform: scale(0.98); }
+
+.lb-btn--solid {
+  background: var(--lb-white); color: var(--lb-black); border-color: var(--lb-white);
+}
+.lb-btn--solid:hover { background: transparent; color: var(--lb-white); }
+
+.lb-btn--dark {
+  border-color: var(--lb-black); color: var(--lb-black);
+}
+.lb-btn--dark:hover { background: var(--lb-black); color: var(--lb-white); }
+
+/* ---------- Hairline divider ---------- */
+.lb-rule {
+  height: 1px; border: 0;
+  background: var(--hairline-on-dark);
+}
+.lb-rule--light { background: var(--hairline-on-light); }

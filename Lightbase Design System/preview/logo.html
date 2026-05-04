@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Logo</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;font-family:var(--font-sans);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;}
+  .panel{padding:30px 32px;display:flex;flex-direction:column;justify-content:space-between;min-height:160px;}
+  .dark{background:#000;color:#fff;}
+  .light{background:#F5F5F4;color:#0A0A0A;}
+  img{height:32px;width:auto;display:block;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;margin:0;}
+  .dark .ttl{color:#9A9A9A;} .light .ttl{color:#3A3A3A;}
+  .light img{filter:invert(1);}
+  small{font-size:10px;opacity:.55;}
+</style></head><body>
+<div class="grid">
+  <div class="panel dark">
+    <p class="ttl">Wordmark · light variant</p>
+    <img src="../assets/logo-light.png" alt="Lightbase">
+    <small>186 × 35 native · use ≥ 24px height</small>
+  </div>
+  <div class="panel light">
+    <p class="ttl">Wordmark · dark (inverted)</p>
+    <img src="../assets/logo-light.png" alt="Lightbase">
+    <small>filter:invert(1) — true dark mark missing · flagged</small>
+  </div>
+</div></body></html>

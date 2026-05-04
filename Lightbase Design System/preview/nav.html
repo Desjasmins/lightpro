@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Nav</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:#000;color:#fff;font-family:var(--font-sans);}
+  .wrap{padding:14px 22px;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#9A9A9A;margin:0 0 12px;font-weight:500;}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;backdrop-filter:blur(20px) saturate(140%);}
+  .left{display:flex;align-items:center;gap:36px;}
+  .logo{height:24px;}
+  ul{list-style:none;margin:0;padding:0;display:flex;gap:28px;}
+  a{color:rgba(255,255,255,0.78);text-decoration:none;font-size:13px;letter-spacing:0.02em;font-weight:500;transition:color .2s;}
+  a:hover{color:#fff;}
+  .pill{padding:10px 20px;border:1px solid #fff;border-radius:999px;font-size:12px;font-weight:500;letter-spacing:0.02em;color:#fff;text-decoration:none;transition:all .24s cubic-bezier(0.22,1,0.36,1);}
+  .pill:hover{background:#fff;color:#000;}
+  small{font-size:10px;color:rgba(255,255,255,0.4);display:block;margin-top:8px;}
+</style></head><body>
+<div class="wrap">
+  <p class="ttl">Top nav · sticky · transparent over hero · blur veil</p>
+  <div class="nav">
+    <div class="left">
+      <img class="logo" src="../assets/logo-light.png" alt="Lightbase">
+      <ul><li><a>Home</a></li><li><a>Collections</a></li><li><a>Sectors</a></li><li><a>Technologies</a></li><li><a>Services</a></li><li><a>About</a></li></ul>
+    </div>
+    <a class="pill">Let's Connect</a>
+  </div>
+  <small>nav links 13/500/0.02em · pill 12/500 · backdrop-filter blur(20px)</small>
+</div></body></html>

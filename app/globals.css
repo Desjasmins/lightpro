@@ -1,26 +1,263 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* =========================================================
+   Lightbase Design Tokens (CSS-first, Tailwind v4)
+   Source: Lightbase Design System/colors_and_type.css
+   ========================================================= */
 @theme inline {
+  /* ----- Brand colors ----- */
+  --color-lb-black: #000000;
+  --color-lb-ink: #0a0a0a;
+  --color-lb-ink-2: #1a1a1a;
+  --color-lb-ink-3: #2a2a2a;
+  --color-lb-ink-4: #3a3a3a;
+  --color-lb-fog: #9a9a9a;
+  --color-lb-mist: #c8c8c6;
+  --color-lb-cloud: #d4d4d2;
+  --color-lb-paper: #f5f5f4;
+  --color-lb-bone: #fafaf8;
+  --color-lb-white: #ffffff;
+  --color-lb-glow: oklch(0.78 0.13 70);
+  --color-lb-glow-soft: oklch(0.86 0.09 75);
+  --color-lb-glow-deep: oklch(0.62 0.14 55);
+
+  /* ----- shadcn semantic mapping (Lightbase = dark by default) ----- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ----- Typography ----- */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo,
+    Consolas, monospace;
+  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ----- Spacing (8-base) ----- */
+  --spacing-lb-1: 4px;
+  --spacing-lb-2: 8px;
+  --spacing-lb-3: 12px;
+  --spacing-lb-4: 16px;
+  --spacing-lb-5: 24px;
+  --spacing-lb-6: 32px;
+  --spacing-lb-7: 48px;
+  --spacing-lb-8: 64px;
+  --spacing-lb-9: 96px;
+  --spacing-lb-10: 128px;
+  --spacing-lb-11: 192px;
+
+  /* ----- Radii ----- */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-pill: 999px;
+
+  /* ----- Shadows (Lightbase is shadow-flat) ----- */
+  --shadow-lb-1: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lb-2: 0 6px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lb-3: 0 24px 60px rgba(0, 0, 0, 0.18);
+
+  /* ----- Motion ----- */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-lb-fast: 140ms;
+  --duration-lb-base: 240ms;
+  --duration-lb-slow: 480ms;
+
+  /* ----- Layout ----- */
+  --container-max: 1440px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ----- Default theme = Lightbase dark (black bg, white text) ----- */
+:root {
+  --background: var(--color-lb-black);
+  --foreground: var(--color-lb-white);
+  --card: var(--color-lb-ink);
+  --card-foreground: var(--color-lb-white);
+  --popover: var(--color-lb-ink-2);
+  --popover-foreground: var(--color-lb-white);
+  --primary: var(--color-lb-white);
+  --primary-foreground: var(--color-lb-black);
+  --secondary: var(--color-lb-ink-2);
+  --secondary-foreground: var(--color-lb-white);
+  --muted: var(--color-lb-ink-2);
+  --muted-foreground: oklch(1 0 0 / 0.55);
+  --accent: var(--color-lb-glow);
+  --accent-foreground: var(--color-lb-black);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(1 0 0 / 0.14);
+  --input: oklch(1 0 0 / 0.16);
+  --ring: var(--color-lb-glow);
+  --chart-1: var(--color-lb-glow);
+  --chart-2: var(--color-lb-fog);
+  --chart-3: var(--color-lb-cloud);
+  --chart-4: var(--color-lb-glow-deep);
+  --chart-5: var(--color-lb-mist);
+  --radius: 0.625rem;
+  --sidebar: var(--color-lb-ink);
+  --sidebar-foreground: var(--color-lb-white);
+  --sidebar-primary: var(--color-lb-glow);
+  --sidebar-primary-foreground: var(--color-lb-black);
+  --sidebar-accent: var(--color-lb-ink-2);
+  --sidebar-accent-foreground: var(--color-lb-white);
+  --sidebar-border: oklch(1 0 0 / 0.1);
+  --sidebar-ring: var(--color-lb-glow);
+}
+
+/* ----- Light surface (alternating sections, modals on bone) ----- */
+.lb-light,
+.lb-light-section {
+  --background: var(--color-lb-paper);
+  --foreground: var(--color-lb-ink);
+  --card: var(--color-lb-bone);
+  --card-foreground: var(--color-lb-ink);
+  --popover: var(--color-lb-white);
+  --popover-foreground: var(--color-lb-ink);
+  --primary: var(--color-lb-black);
+  --primary-foreground: var(--color-lb-white);
+  --secondary: var(--color-lb-cloud);
+  --secondary-foreground: var(--color-lb-ink);
+  --muted: var(--color-lb-cloud);
+  --muted-foreground: var(--color-lb-ink-3);
+  --accent: var(--color-lb-glow);
+  --accent-foreground: var(--color-lb-black);
+  --border: oklch(0 0 0 / 0.1);
+  --input: oklch(0 0 0 / 0.12);
+  --ring: var(--color-lb-glow);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   Lightbase utility classes — Eyebrow, Display, etc.
+   ============================================================ */
+@layer components {
+  .lb-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: oklch(from var(--foreground) l c h / 0.72);
+  }
+
+  .lb-display {
+    font-weight: 700;
+    font-size: clamp(56px, 7vw, 88px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .lb-h1 {
+    font-weight: 700;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .lb-h2 {
+    font-weight: 600;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .lb-h3 {
+    font-weight: 600;
+    font-size: clamp(20px, 2.2vw, 28px);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .lb-lede {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.7;
+    color: oklch(from var(--foreground) l c h / 0.72);
+    text-wrap: pretty;
+    max-width: 62ch;
+  }
+
+  .lb-tagline {
+    font-size: 1rem;
+    font-weight: 400;
+    color: oklch(from var(--foreground) l c h / 0.72);
+    line-height: 1.4;
+  }
+
+  .lb-rule {
+    height: 1px;
+    border: 0;
+    background: oklch(from var(--foreground) l c h / 0.14);
+  }
+
+  .lb-hero-veil {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 40%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  /* Container respecting Lightbase max-width */
+  .lb-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 64px);
+  }
 }

@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Buttons</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;font-family:var(--font-sans);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;}
+  .panel{padding:24px 28px;display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
+  .dark{background:#000;color:#fff;}
+  .light{background:#F5F5F4;color:#0A0A0A;}
+  .ttl{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;margin:0 0 4px;}
+  .dark .ttl{color:#9A9A9A;} .light .ttl{color:#3A3A3A;}
+  button{font-family:inherit;font:500 13px/1 var(--font-sans);letter-spacing:0.02em;padding:13px 26px;border-radius:999px;cursor:pointer;border:1px solid currentColor;transition:all .24s cubic-bezier(0.22,1,0.36,1);}
+  .b-ghost-d{background:transparent;color:#fff;border-color:#fff;}
+  .b-ghost-d:hover{background:#fff;color:#000;}
+  .b-solid-d{background:#fff;color:#000;border-color:#fff;}
+  .b-ghost-l{background:transparent;color:#0A0A0A;border-color:#0A0A0A;}
+  .b-solid-l{background:#0A0A0A;color:#fff;border-color:#0A0A0A;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;}
+  small{font-size:10px;opacity:.55;font-feature-settings:"tnum";}
+</style></head><body>
+<div class="grid">
+  <div class="panel dark">
+    <p class="ttl">On dark</p>
+    <div class="row">
+      <button class="b-ghost-d">Let's Connect</button>
+      <button class="b-solid-d">See all collections</button>
+    </div>
+    <small>pill · 13/1 · 0.02em · 13×26 padding</small>
+  </div>
+  <div class="panel light">
+    <p class="ttl">On light</p>
+    <div class="row">
+      <button class="b-ghost-l">Let's Connect</button>
+      <button class="b-solid-l">See all collections</button>
+    </div>
+    <small>hover inverts fill ↔ ground · 240ms ease-out-quint</small>
+  </div>
+</div></body></html>
