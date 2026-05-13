@@ -9,12 +9,12 @@ export function Hero() {
   return (
     <section className="relative isolate min-h-[88vh] flex items-end overflow-hidden bg-black">
       <Image
-        src="/lightbase/hero-image.jpg"
+        src="/lightbase/lb-hero-fields-sunset.jpg"
         alt=""
         fill
         priority
         sizes="100vw"
-        className="object-cover opacity-80"
+        className="object-cover opacity-90"
       />
       <div className="absolute inset-0 lb-hero-veil" />
       <div className="lb-container relative z-10 pb-24 pt-32">

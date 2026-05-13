@@ -38,16 +38,16 @@
     }
   },
   "Sectors": {
-    "eyebrow": "SECTEURS",
+    "eyebrow": "TYPES DE TERRAINS",
     "title": "Pensé pour vos terrains",
-    "education": "Éducation",
-    "healthcare": "Santé",
-    "hospitality": "Hôtellerie",
-    "agriculture": "Horticulture",
-    "industrial": "Industriel",
-    "public": "Espaces publics",
-    "residential": "Résidentiel",
-    "retail": "Commerce"
+    "football": "Football & athlétisme",
+    "soccer": "Soccer",
+    "pickleball": "Pickleball",
+    "stadium": "Stade & multi-projecteurs",
+    "golf": "Golf",
+    "schoolFields": "Terrains scolaires",
+    "nightFields": "Multi-terrains nocturne",
+    "arena": "Aréna récréative"
   },
   "CTA": {
     "title": "Estimez votre projet en 15 minutes",
@@ -63,42 +63,181 @@
     "terms": "Conditions d'utilisation",
     "dataRequest": "Demande d'accès / suppression"
   },
+  "TerrainEditor": {
+    "newField": "Nouveau terrain",
+    "tabs": {
+      "identity": "Identité",
+      "identitySublabel": "Nom & emplacement",
+      "perimeter": "Périmètre",
+      "perimeterSublabel": "Tracer la zone",
+      "poles": "Fûts",
+      "polesSublabel": "Placer les poteaux",
+      "configuration": "Configuration",
+      "configurationSublabel": "Options du luminaire"
+    },
+    "footer": {
+      "cancel": "Annuler",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "save": "Enregistrer"
+    },
+    "identity": {
+      "title": "Identité et emplacement",
+      "subtitle": "Donne un nom à ton terrain, choisis l'activité et capture la vue satellite.",
+      "name": "Nom du terrain",
+      "namePh": "Ex. Terrain de soccer principal",
+      "activity": "Activité",
+      "iesLevel": "Niveau / Classe IES",
+      "address": "Adresse du terrain",
+      "addressPh": "Ex. 3819 Avenue Calixa-Lavallée, Montréal, QC",
+      "captureButton": "Capturer cette vue",
+      "recaptureButton": "Recapturer",
+      "capturing": "Capture…",
+      "captureSuccess": "Vue capturée.",
+      "captureFailed": "Échec de la capture",
+      "viewCaptured": "Vue capturée",
+      "captureHint": "Déplacez/zoomez et cliquez « Capturer cette vue »",
+      "captureCustom": "Position personnalisée",
+      "previewTitle": "Aperçu de la capture",
+      "previewAlt": "Capture satellite",
+      "zoomLabel": "Zoom",
+      "confirmRecaptureTitle": "Refaire une capture ?",
+      "confirmRecaptureBody": "Si tu recaptures la vue, le tracé du périmètre et tous les fûts placés seront effacés (ils étaient liés à la capture précédente).",
+      "confirmRecaptureConfirm": "Oui, recapturer"
+    },
+    "perimeter": {
+      "stepLabel": "Étape 2 sur 3",
+      "title": "Tracez le périmètre",
+      "howToTitle": "Comment faire",
+      "howToBody": "Cliquez sur la carte pour placer chaque coin de votre terrain. La forme se ferme automatiquement quand vous avez au moins 3 points.",
+      "stepHint": "Cliquez sur la carte pour ajouter des points. Min. 3 points.",
+      "pointsLabel": "Points placés",
+      "surfaceLabel": "Surface",
+      "needMore": "Encore {count} point",
+      "needMorePlural": "Encore {count} points",
+      "minPoints": "Min. 3 points",
+      "undo": "Annuler le dernier point",
+      "clear": "Tout effacer",
+      "validatedHint": "✓ Périmètre validé — passez à l'étape « Fûts »",
+      "captureMissing": "Capture manquante pour ce terrain.",
+      "placeholderHint": "Cliquez sur la carte pour ajouter des points du périmètre"
+    },
+    "poles": {
+      "stepLabel": "Étape 3 sur 3",
+      "title": "Placez les fûts",
+      "howToTitle": "Comment faire",
+      "howToBody": "Cliquez sur la carte pour placer chaque fût (poteau) existant. Une fenêtre apparaîtra pour saisir ses détails.",
+      "howToBodyEditExtra": "Cliquez sur un fût déjà placé pour l'éditer.",
+      "placedCount": "Fûts placés",
+      "clickHint": "Cliquez sur la carte pour placer un fût",
+      "clickToEdit": "Cliquez pour éditer un fût",
+      "remove": "Retirer",
+      "type": "Type de fût",
+      "heightM": "Hauteur (m)",
+      "voltage": "Tension",
+      "mount": "Montage",
+      "crossarms": "Traverses",
+      "fixtures": "Luminaires",
+      "powerW": "Puissance unitaire (W)",
+      "captureMissing": "Capture manquante.",
+      "readyHint": "✓ {count} fût placé — prêt à enregistrer",
+      "readyHintPlural": "✓ {count} fûts placés — prêt à enregistrer",
+      "editTitle": "Fût #{index}",
+      "editSubtitle": "Renseignez les caractéristiques de ce fût.",
+      "done": "Terminer"
+    },
+    "configuration": {
+      "title": "Configuration du luminaire",
+      "subtitle": "Précisez les options pour ce terrain. Ces choix affectent le coût et le produit final.",
+      "brackets": {
+        "title": "Type de bracket",
+        "description": "Choisissez le type de support utilisé pour fixer les luminaires."
+      },
+      "visor": {
+        "title": "Type de visière",
+        "description": "La visière limite l'éblouissement et la pollution lumineuse.",
+        "options": {
+          "VN": "Aucune visière",
+          "VSS": "Visière courte",
+          "VLS": "Visière longue"
+        }
+      },
+      "control": {
+        "title": "Système de contrôle",
+        "description": "Choisissez la possibilité d'installation Smart Lighting.",
+        "optionLabel": "Option {index}",
+        "details": {
+          "BASE": "Contrôle individuel par luminaire avec nœud cellulaire 5G intégré. Chaque projecteur peut être allumé, éteint ou tamisé indépendamment — granularité maximale. Forfait données 5G requis pour chaque luminaire. Convient aux petites installations nécessitant un contrôle fin par projecteur.",
+          "SMART_POLE": "Boîtier de contrôle 5G partagé par groupe de 8 luminaires. Pilote toutes les lumières d'une même zone via un seul abonnement données. L'alimentation des luminaires reste séparée — câblage électrique standard requis. Solution économique pour le contrôle par zone.",
+          "SMART_POWERBOX": "Boîtier tout-en-un intégrant le contrôle 5G et l'alimentation pour 8 luminaires. Simplifie le câblage : un seul boîtier au pied du fût gère le pilotage et la distribution électrique. Solution recommandée pour les fûts de 50 pieds et plus.",
+          "SMART_ZONE": "Boîtiers Wifi locaux pilotés par une passerelle 5G centralisée pour tout le site. Chaque boîtier communique en Wifi avec ses 8 luminaires ; une seule connexion 5G dessert l'ensemble du projet. Réduit drastiquement les frais récurrents de forfait données pour les grandes installations multi-fûts.",
+          "SMART_POWERBOX_BT": "Boîtier contrôle + alimentation par groupe de 8 luminaires, communication Bluetooth. Aucun forfait données récurrent — pilotage local via application mobile ou passerelle dédiée. Idéal pour les sites sans couverture cellulaire ou pour éliminer les frais d'abonnement à long terme."
+        }
+      },
+      "crossarms": {
+        "title": "Remplacer les traverses ?",
+        "description": "Souhaitez-vous remplacer les traverses existantes lors de l'installation ?",
+        "yes": "Oui, remplacer",
+        "no": "Non, conserver"
+      }
+    }
+  },
+  "TerrainCard": {
+    "noName": "Sans nom",
+    "noCapture": "(sans capture)",
+    "complete": "Complet",
+    "draft": "Brouillon",
+    "surface": "Surface",
+    "polesLabel": "Fûts",
+    "edit": "Modifier",
+    "removeAria": "Supprimer"
+  },
+  "TerrainList": {
+    "title": "Mes terrains",
+    "subtitle": "Ajoute chaque terrain à équiper. Pour chaque terrain : adresse, capture satellite, tracé du périmètre et placement des fûts.",
+    "hintEmpty": "Cliquez « Ajouter un terrain » pour commencer.",
+    "hintCount": "{count} terrain enregistré",
+    "hintCountPlural": "{count} terrains enregistrés",
+    "incompleteHint": "Terrain(s) incomplet(s) : {names}. Complétez toutes les étapes (identité, périmètre, fûts, configuration) avant de continuer.",
+    "saved": "Terrain « {name} » enregistré.",
+    "deleted": "Terrain supprimé.",
+    "missingKey": "La clé Google Maps doit être configurée dans .env.local.",
+    "confirmDeleteTitle": "Supprimer ce terrain ?",
+    "confirmDeleteBody": "« {name} » et toutes ses informations seront effacées. Cette action est définitive.",
+    "confirmDeleteConfirm": "Oui, supprimer",
+    "addTitle": "Ajouter un terrain",
+    "addSubtitle": "Tape l'adresse, capture la vue satellite, trace ton terrain et place les fûts."
+  },
   "Estimation": {
     "title": "Outil d'estimation",
     "subtitle": "Mise aux normes et conversion DEL — éclairage sportif municipal",
     "stepLabel": "Étape {current} sur {total}",
     "next": "Suivant",
     "previous": "Précédent",
-    "submit": "Générer l'estimation",
+    "submit": "Envoyer le bilan par courriel",
     "saveDraft": "Enregistrer le brouillon",
     "steps": {
-      "project": "Projet",
-      "address": "Adresse",
-      "fields": "Terrains",
-      "poles": "Fûts",
-      "configuration": "Configuration",
-      "summary": "Bilan"
+      "terrains": "Mes terrains",
+      "summary": "Bilan",
+      "contact": "Recevoir le bilan"
     },
     "step1": {
-      "title": "Informations du projet",
-      "subtitle": "Identifiez le projet et la personne de contact.",
-      "projectName": "Nom du projet",
-      "projectNamePh": "Ex. Parc Lafontaine — phase 2",
-      "municipality": "Municipalité",
-      "municipalityPh": "Ex. Ville de Montréal",
-      "contactName": "Nom du contact",
-      "contactNamePh": "Prénom Nom",
-      "contactEmail": "Courriel du contact",
-      "contactEmailPh": "exemple@municipalite.qc.ca"
-    },
-    "step2": {
       "title": "Adresse du parc",
       "subtitle": "Saisissez l'adresse civique du parc à équiper. La carte affiche la vue satellite pour validation visuelle.",
       "address": "Adresse civique",
       "addressPh": "Ex. 3819 Avenue Calixa-Lavallée, Montréal, QC",
-      "mapHint": "Astuce : sur Google Maps, clic-droit > Mesurer une distance pour estimer la surface d'un terrain."
+      "mapHint": "Astuce : sur Google Maps, clic-droit > Mesurer une distance pour estimer la surface d'un terrain.",
+      "captureButton": "Capturer la vue",
+      "recaptureButton": "Recapturer",
+      "capturing": "Capture…",
+      "captureSuccess": "Vue capturée.",
+      "captureSelectAddressFirst": "Saisissez une adresse complète d'abord",
+      "captureFailed": "Échec de la capture",
+      "hintTypeAddress": "Saisissez une adresse au Québec. La carte se centre automatiquement.",
+      "viewCaptured": "Vue capturée",
+      "previewCaption": "Aperçu de la capture (session)"
     },
-    "step3": {
+    "step2": {
       "title": "Terrains sportifs",
       "subtitle": "Ajoutez chaque terrain à équiper. La classe IES détermine les niveaux d'éclairement requis.",
       "addField": "Ajouter un terrain",
@@ -110,7 +249,7 @@
       "surfaceM2": "Surface (m²)",
       "surfaceM2Hint": "Mesurée sur Google Maps ou plan municipal."
     },
-    "step4": {
+    "step3": {
       "title": "Fûts existants",
       "subtitle": "Pour chaque terrain, saisissez les fûts existants. Le scénario de remplacement 1-pour-1 utilise ces données.",
       "addPole": "Ajouter un fût",
@@ -124,7 +263,7 @@
       "existingPowerW": "Puissance unitaire (W)",
       "voltage": "Tension"
     },
-    "step5": {
+    "step4": {
       "title": "Configuration produit",
       "subtitle": "Pour chaque terrain, choisissez le module et les options Lightpro OM.",
       "module": "Module",
@@ -139,9 +278,9 @@
       "withRegulation": "Régulation et mesure (admissible HQ-OSE)",
       "hqOseEligible": "Mon organisme est admissible au programme HQ-OSE 5.1"
     },
-    "step6": {
+    "step5": {
       "title": "Bilan budgétaire",
-      "subtitle": "Estimation pour les luminaires, accessoires, contrôle et ingénierie. Hors installation.",
+      "subtitle": "Aperçu de votre estimation. À l'étape suivante, complétez vos coordonnées pour recevoir le rapport détaillé par courriel.",
       "scenarioA": "Scénario A — Remplacement 1 pour 1",
       "scenarioB": "Scénario B — Conformité IES RP-6-22",
       "verdictGo": "Faisable avec les fûts existants",
@@ -174,9 +313,28 @@
         "Taxes (TPS / TVQ — affichées séparément)"
       ],
       "disclaimer": "Cette estimation est générée automatiquement à des fins budgétaires préliminaires et porte uniquement sur la fourniture des luminaires, accessoires, système de contrôle et heures d'ingénierie. Les coûts d'installation (grue, électricien, raccordement, démontage de l'existant, etc.) ne sont pas inclus et doivent être obtenus séparément auprès d'un installateur certifié. Les quantités, configurations, niveaux d'éclairement et prix peuvent varier suite à une visite technique, une étude photométrique détaillée (AGI32 ou équivalent), une vérification de la capacité portante des fûts existants, et une analyse des contraintes spécifiques du site. Lightbase ne peut être tenue responsable d'écarts entre cette estimation et l'offre commerciale finale.",
-      "downloadPdf": "Télécharger le PDF",
-      "requestQuote": "Demander un devis officiel",
-      "restart": "Recommencer"
+      "continueToContact": "Recevoir le bilan par courriel"
+    },
+    "step6": {
+      "title": "Recevez votre bilan par courriel",
+      "subtitle": "Complétez vos informations — nous vous envoyons le rapport détaillé immédiatement, sans engagement.",
+      "projectName": "Nom du projet",
+      "projectNamePh": "Ex. Parc Lafontaine — phase 2",
+      "municipality": "Municipalité",
+      "municipalityPh": "Ex. Ville de Montréal",
+      "contactName": "Nom du contact",
+      "contactNamePh": "Prénom Nom",
+      "contactEmail": "Courriel du contact",
+      "contactEmailPh": "exemple@municipalite.qc.ca",
+      "consent": "J'accepte que Lightbase utilise ces informations pour me contacter concernant ce projet (Loi 25).",
+      "summaryRecap": "Récapitulatif de votre estimation",
+      "submit": "Envoyer le bilan par courriel",
+      "submitting": "Envoi en cours…",
+      "successTitle": "Bilan envoyé !",
+      "successBody": "Vérifiez votre boîte de réception ({email}). Notre équipe peut vous recontacter pour un devis officiel ou une étude détaillée.",
+      "restart": "Faire une nouvelle estimation",
+      "errorTitle": "Erreur lors de l'envoi",
+      "errorBody": "Une erreur est survenue. Vérifiez vos informations ou réessayez."
     }
   },
   "Sports": {
@@ -269,6 +427,7 @@
     "BASE": "Contrôle de base (tout-en-un)",
     "SMART_POLE": "Smart Pole",
     "SMART_POWERBOX": "Smart Powerbox",
-    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)"
+    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)",
+    "SMART_POWERBOX_BT": "Smart Powerbox Bluetooth"
   }
 }

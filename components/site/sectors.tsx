@@ -2,14 +2,14 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 const sectors = [
-  { key: "education", img: "/lightbase/sector-education.png" },
-  { key: "healthcare", img: "/lightbase/sector-healthcare.jpg" },
-  { key: "hospitality", img: "/lightbase/sector-hospitality.png" },
-  { key: "agriculture", img: "/lightbase/sector-agriculture.jpg" },
-  { key: "industrial", img: "/lightbase/sector-industrial.jpg" },
-  { key: "public", img: "/lightbase/sector-public.png" },
-  { key: "residential", img: "/lightbase/sector-residential.jpg" },
-  { key: "retail", img: "/lightbase/sector-retail.png" },
+  { key: "football", img: "/lightbase/lb-sector-football.jpg" },
+  { key: "soccer", img: "/lightbase/lb-sector-soccer.jpg" },
+  { key: "pickleball", img: "/lightbase/lb-sector-pickleball.jpg" },
+  { key: "stadium", img: "/lightbase/lb-sector-stadium.jpg" },
+  { key: "golf", img: "/lightbase/lb-sector-golf.jpg" },
+  { key: "schoolFields", img: "/lightbase/lb-sector-school-fields.jpg" },
+  { key: "nightFields", img: "/lightbase/lb-sector-night-fields.jpg" },
+  { key: "arena", img: "/lightbase/lb-sector-arena.jpg" },
 ] as const;
 
 export function Sectors() {

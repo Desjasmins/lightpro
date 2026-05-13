@@ -10,14 +10,7 @@ interface StepperProps {
   onJump?: (step: number) => void;
 }
 
-const stepKeys = [
-  "project",
-  "address",
-  "fields",
-  "poles",
-  "configuration",
-  "summary",
-] as const;
+const stepKeys = ["terrains", "summary", "contact"] as const;
 
 export function Stepper({ current, total, onJump }: StepperProps) {
   const t = useTranslations("Estimation");
@@ -36,7 +29,7 @@ export function Stepper({ current, total, onJump }: StepperProps) {
                 onClick={() => status !== "todo" && onJump?.(n)}
                 disabled={status === "todo"}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-3 py-1.5 transition border",
+                  "flex items-center gap-2 rounded-full px-3 py-1.5 transition border cursor-pointer",
                   status === "active" &&
                     "bg-foreground text-background border-foreground",
                   status === "done" &&
@@ -48,14 +41,16 @@ export function Stepper({ current, total, onJump }: StepperProps) {
                 <span
                   className={cn(
                     "inline-flex h-5 w-5 items-center justify-center rounded-full border text-[10px]",
-                    status === "active" && "bg-background text-foreground border-background",
-                    status === "done" && "bg-foreground text-background border-foreground",
+                    status === "active" &&
+                      "bg-background text-foreground border-background",
+                    status === "done" &&
+                      "bg-foreground text-background border-foreground",
                     status === "todo" && "border-border",
                   )}
                 >
                   {status === "done" ? <Check size={11} /> : n}
                 </span>
-                <span className="tracking-tight font-medium uppercase letter-spacing-wide">
+                <span className="tracking-tight font-medium uppercase">
                   {t(`steps.${key}`)}
                 </span>
               </button>

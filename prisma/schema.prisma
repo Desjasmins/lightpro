@@ -122,6 +122,7 @@ enum ControlArchitecture {
   SMART_POLE
   SMART_POWERBOX
   SMART_ZONE
+  SMART_POWERBOX_BT
 }
 
 enum GoNoGo {

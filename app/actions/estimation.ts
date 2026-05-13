@@ -55,21 +55,26 @@ export async function submitEstimation(
         municipality: data.project.municipality,
         contactName: data.project.contactName,
         contactEmail: data.project.contactEmail,
-        address: data.address.address,
+        // The project-level address is the address of the first field for
+        // backwards compat (the schema still has Project.address).
+        address: data.fields[0]?.address ?? "",
+        lat: data.fields[0]?.lat ?? null,
+        lng: data.fields[0]?.lng ?? null,
         hqOseEligible: data.hqOseEligible,
         status: "SUBMITTED",
         fields: {
           create: data.fields.map((f) => {
             const cfg = data.configurations.find((c) => c.fieldId === f.id);
-            const polesForField =
-              data.poles.find((p) => p.fieldId === f.id)?.poles ?? [];
             return {
               name: f.name,
               sportType: f.sportType,
               iesClass: f.iesClass,
               surfaceM2: f.surfaceM2,
+              perimeterGeoJson: f.perimeter
+                ? (f.perimeter as unknown as Prisma.InputJsonValue)
+                : Prisma.JsonNull,
               poles: {
-                create: polesForField.map((p) => ({
+                create: f.poles.map((p) => ({
                   index: p.index,
                   type: p.type,
                   heightM: p.heightM,
@@ -78,6 +83,8 @@ export async function submitEstimation(
                   nbExistingFixtures: p.nbExistingFixtures,
                   existingPowerW: p.existingPowerW,
                   voltage: p.voltage,
+                  positionX: p.positionX ?? null,
+                  positionY: p.positionY ?? null,
                 })),
               },
               configuration: cfg

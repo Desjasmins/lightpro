@@ -110,6 +110,8 @@ export function controlCostPerPole(arch: ControlArchitecture): number {
       return 320;
     case "SMART_ZONE":
       return 480;
+    case "SMART_POWERBOX_BT":
+      return 400;
   }
 }
 

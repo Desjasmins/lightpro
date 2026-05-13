@@ -2,18 +2,19 @@
 
 import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { z } from "zod";
 import { calculateEstimation } from "@/lib/estimation/calculate";
 import {
-  fullEstimationSchema,
-  type FullEstimation,
+  fieldSchema,
+  configurationSchema,
 } from "@/lib/estimation/schema";
+import { deriveConfigurations } from "@/lib/estimation/config-derive";
 import type { EstimationDraft } from "@/lib/estimation/store";
-import { submitEstimation } from "@/app/actions/estimation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -22,13 +23,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check, X, AlertTriangle, Loader2 } from "lucide-react";
+import { Check, X, AlertTriangle, ArrowRight } from "lucide-react";
 
 interface StepProps {
   draft: EstimationDraft;
+  update: (patch: Partial<EstimationDraft>) => void;
+  onNext: () => void;
   onPrev: () => void;
-  onReset: () => void;
 }
+
+const partialEstimationSchema = z.object({
+  fields: z.array(fieldSchema).min(1),
+  configurations: z.array(configurationSchema).min(1),
+  hqOseEligible: z.boolean(),
+});
 
 function formatCad(n: number, locale: string): string {
   return new Intl.NumberFormat(locale === "en" ? "en-CA" : "fr-CA", {
@@ -44,50 +52,36 @@ function formatNumber(n: number, locale: string, digits = 0): string {
   }).format(n);
 }
 
-export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
+export function Step3Summary({ draft, update, onNext, onPrev }: StepProps) {
   const t = useTranslations("Estimation");
-  const tStep = useTranslations("Estimation.step6");
+  const tStep = useTranslations("Estimation.step5");
+  const tStep4 = useTranslations("Estimation.step4");
   const locale = useLocale();
 
-  const candidate: FullEstimation | null = useMemo(() => {
-    if (!draft.project || !draft.address) return null;
+  const result = useMemo(() => {
+    const configurations = deriveConfigurations(
+      draft.fields,
+      draft.hqOseEligible,
+    );
     const candidate = {
-      project: draft.project,
-      address: draft.address,
       fields: draft.fields,
-      poles: draft.poles,
-      configurations: draft.configurations,
+      configurations,
       hqOseEligible: draft.hqOseEligible,
     };
-    const parsed = fullEstimationSchema.safeParse(candidate);
-    return parsed.success ? parsed.data : null;
+    const parsed = partialEstimationSchema.safeParse(candidate);
+    if (!parsed.success) return null;
+    return calculateEstimation({
+      project: {
+        name: "",
+        municipality: "",
+        contactName: "",
+        contactEmail: "x@example.com",
+      },
+      ...parsed.data,
+    });
   }, [draft]);
 
-  const result = useMemo(() => {
-    if (!candidate) return null;
-    return calculateEstimation(candidate);
-  }, [candidate]);
-
-  const submission = useMutation({
-    mutationFn: async () => {
-      if (!candidate) throw new Error("Invalid draft");
-      const response = await submitEstimation(candidate, locale === "en" ? "en" : "fr");
-      if (!response.ok) throw new Error(response.error);
-      return response;
-    },
-    onSuccess: () => {
-      toast.success(
-        locale === "en"
-          ? "Estimate saved. We'll be in touch."
-          : "Estimation enregistrée. Nous vous recontactons.",
-      );
-    },
-    onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "Submission failed");
-    },
-  });
-
-  if (!candidate || !result) {
+  if (!result) {
     return (
       <div className="space-y-6">
         <p className="text-muted-foreground">
@@ -102,14 +96,8 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
     );
   }
 
-  const includedItems = (
-    tStep.raw("included") as unknown as string[]
-  );
-  const notIncludedItems = (
-    tStep.raw("notIncluded") as unknown as string[]
-  );
-
-  const submitted = submission.isSuccess;
+  const includedItems = tStep.raw("included") as unknown as string[];
+  const notIncludedItems = tStep.raw("notIncluded") as unknown as string[];
 
   return (
     <div className="space-y-10">
@@ -118,7 +106,7 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
         <p className="lb-lede text-base">{tStep("subtitle")}</p>
       </header>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <Badge
           variant={result.verdictGoNoGo === "GO" ? "default" : "destructive"}
           className="rounded-full px-3 py-1"
@@ -133,6 +121,17 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
             </>
           )}
         </Badge>
+
+        <div className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 bg-card/40">
+          <Checkbox
+            id="hq-ose-summary"
+            checked={draft.hqOseEligible}
+            onCheckedChange={(v) => update({ hqOseEligible: v === true })}
+          />
+          <Label htmlFor="hq-ose-summary" className="cursor-pointer text-xs">
+            {tStep4("hqOseEligible")}
+          </Label>
+        </div>
       </div>
 
       <Card>
@@ -167,7 +166,9 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {formatCad(
-                      f.fixturesPriceCad + f.accessoriesPriceCad + f.controlPriceCad,
+                      f.fixturesPriceCad +
+                        f.accessoriesPriceCad +
+                        f.controlPriceCad,
                       locale,
                     )}
                   </TableCell>
@@ -227,7 +228,8 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
               {tStep("energySavings")}
             </p>
             <p className="lb-h3">
-              {formatNumber(result.energySavingsKwhYear, locale)} {tStep("kwhYear")}
+              {formatNumber(result.energySavingsKwhYear, locale)}{" "}
+              {tStep("kwhYear")}
             </p>
           </CardContent>
         </Card>
@@ -237,7 +239,8 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
               {tStep("ghgReduction")}
             </p>
             <p className="lb-h3">
-              {formatNumber(result.ghgReductionKgYear, locale)} {tStep("kgYear")}
+              {formatNumber(result.ghgReductionKgYear, locale)}{" "}
+              {tStep("kgYear")}
             </p>
           </CardContent>
         </Card>
@@ -246,13 +249,16 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="lb-light">
           <CardHeader>
-            <CardTitle className="text-base">{tStep("includedTitle")}</CardTitle>
+            <CardTitle className="text-base">
+              {tStep("includedTitle")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               {includedItems.map((s) => (
                 <li key={s} className="flex gap-2">
-                  <Check size={16} className="shrink-0 mt-0.5 text-green-700" /> {s}
+                  <Check size={16} className="shrink-0 mt-0.5 text-green-700" />{" "}
+                  {s}
                 </li>
               ))}
             </ul>
@@ -260,13 +266,16 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">{tStep("notIncludedTitle")}</CardTitle>
+            <CardTitle className="text-base">
+              {tStep("notIncludedTitle")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm">
               {notIncludedItems.map((s) => (
                 <li key={s} className="flex gap-2">
-                  <X size={16} className="shrink-0 mt-0.5 text-destructive" /> {s}
+                  <X size={16} className="shrink-0 mt-0.5 text-destructive" />{" "}
+                  {s}
                 </li>
               ))}
             </ul>
@@ -288,37 +297,15 @@ export function Step6Summary({ draft, onPrev, onReset }: StepProps) {
         >
           {t("previous")}
         </Button>
-        <div className="flex flex-wrap gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="rounded-full"
-            onClick={onReset}
-          >
-            {tStep("restart")}
-          </Button>
-          <Button
-            type="button"
-            size="lg"
-            className="rounded-full"
-            disabled={submission.isPending || submitted}
-            onClick={() => submission.mutate()}
-          >
-            {submission.isPending ? (
-              <>
-                <Loader2 size={14} className="mr-2 animate-spin" />
-                …
-              </>
-            ) : submitted ? (
-              <>
-                <Check size={14} className="mr-2" /> ✓
-              </>
-            ) : (
-              t("submit")
-            )}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          size="lg"
+          className="rounded-full"
+          onClick={onNext}
+        >
+          {tStep("continueToContact")}
+          <ArrowRight size={14} className="ml-2" />
+        </Button>
       </div>
     </div>
   );

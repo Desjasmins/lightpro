@@ -38,16 +38,16 @@
     }
   },
   "Sectors": {
-    "eyebrow": "SECTORS",
+    "eyebrow": "FIELD TYPES",
     "title": "Built for your fields",
-    "education": "Education",
-    "healthcare": "Healthcare",
-    "hospitality": "Hospitality",
-    "agriculture": "Horticulture",
-    "industrial": "Industrial",
-    "public": "Public spaces",
-    "residential": "Residential",
-    "retail": "Retail"
+    "football": "Football & track",
+    "soccer": "Soccer",
+    "pickleball": "Pickleball",
+    "stadium": "Stadium & multi-fixture",
+    "golf": "Golf",
+    "schoolFields": "School fields",
+    "nightFields": "Multi-fields at night",
+    "arena": "Recreation arena"
   },
   "CTA": {
     "title": "Estimate your project in 15 minutes",
@@ -63,42 +63,181 @@
     "terms": "Terms of use",
     "dataRequest": "Data access / deletion request"
   },
+  "TerrainEditor": {
+    "newField": "New field",
+    "tabs": {
+      "identity": "Identity",
+      "identitySublabel": "Name & location",
+      "perimeter": "Perimeter",
+      "perimeterSublabel": "Draw the zone",
+      "poles": "Poles",
+      "polesSublabel": "Place the poles",
+      "configuration": "Configuration",
+      "configurationSublabel": "Luminaire options"
+    },
+    "footer": {
+      "cancel": "Cancel",
+      "previous": "Previous",
+      "next": "Next",
+      "save": "Save"
+    },
+    "identity": {
+      "title": "Identity & location",
+      "subtitle": "Name the field, pick the activity and capture the satellite view.",
+      "name": "Field name",
+      "namePh": "e.g. Main soccer field",
+      "activity": "Activity",
+      "iesLevel": "Level / IES Class",
+      "address": "Field address",
+      "addressPh": "e.g. 3819 Calixa-Lavallée Ave, Montréal, QC",
+      "captureButton": "Capture this view",
+      "recaptureButton": "Recapture",
+      "capturing": "Capturing…",
+      "captureSuccess": "View captured.",
+      "captureFailed": "Capture failed",
+      "viewCaptured": "View captured",
+      "captureHint": "Move/zoom the map and click \"Capture this view\"",
+      "captureCustom": "Custom position",
+      "previewTitle": "Capture preview",
+      "previewAlt": "Satellite capture",
+      "zoomLabel": "Zoom",
+      "confirmRecaptureTitle": "Recapture?",
+      "confirmRecaptureBody": "Recapturing the view will erase the perimeter trace and all placed poles (they were tied to the previous capture).",
+      "confirmRecaptureConfirm": "Yes, recapture"
+    },
+    "perimeter": {
+      "stepLabel": "Step 2 of 3",
+      "title": "Draw the perimeter",
+      "howToTitle": "How to",
+      "howToBody": "Click on the map to place each corner of your field. The shape closes automatically when you have at least 3 points.",
+      "stepHint": "Click the map to add points. Min. 3 points.",
+      "pointsLabel": "Points placed",
+      "surfaceLabel": "Surface",
+      "needMore": "{count} more point",
+      "needMorePlural": "{count} more points",
+      "minPoints": "Min. 3 points",
+      "undo": "Undo last point",
+      "clear": "Clear all",
+      "validatedHint": "✓ Perimeter validated — go to the \"Poles\" step",
+      "captureMissing": "Capture missing for this field.",
+      "placeholderHint": "Click on the map to add perimeter points"
+    },
+    "poles": {
+      "stepLabel": "Step 3 of 3",
+      "title": "Place the poles",
+      "howToTitle": "How to",
+      "howToBody": "Click on the map to place each existing pole. A popup will appear to enter its details.",
+      "howToBodyEditExtra": "Click an already placed pole to edit it.",
+      "placedCount": "Poles placed",
+      "clickHint": "Click on the map to place a pole",
+      "clickToEdit": "Click to edit a pole",
+      "remove": "Remove",
+      "type": "Pole type",
+      "heightM": "Height (m)",
+      "voltage": "Voltage",
+      "mount": "Mount",
+      "crossarms": "Crossarms",
+      "fixtures": "Fixtures",
+      "powerW": "Unit power (W)",
+      "captureMissing": "Capture missing.",
+      "readyHint": "✓ {count} pole placed — ready to save",
+      "readyHintPlural": "✓ {count} poles placed — ready to save",
+      "editTitle": "Pole #{index}",
+      "editSubtitle": "Enter the characteristics of this pole.",
+      "done": "Done"
+    },
+    "configuration": {
+      "title": "Luminaire configuration",
+      "subtitle": "Set the options for this field. These choices affect the cost and final product.",
+      "brackets": {
+        "title": "Bracket type",
+        "description": "Select the type of mounting bracket for the luminaires."
+      },
+      "visor": {
+        "title": "Visor type",
+        "description": "The visor controls glare and light pollution.",
+        "options": {
+          "VN": "No visor",
+          "VSS": "Short visor",
+          "VLS": "Long visor"
+        }
+      },
+      "control": {
+        "title": "Control system",
+        "description": "Choose the Smart Lighting installation option.",
+        "optionLabel": "Option {index}",
+        "details": {
+          "BASE": "Individual per-luminaire control with built-in 5G cellular node. Each fixture can be switched or dimmed independently — maximum granularity. A 5G data plan is required for each luminaire. Suited for small installations needing fine-grained control per fixture.",
+          "SMART_POLE": "Shared 5G control box driving up to 8 luminaires. Manages all lights in a zone with a single data subscription. Luminaire power is wired separately — standard electrical wiring required. Cost-effective option for zone-based control.",
+          "SMART_POWERBOX": "All-in-one box integrating 5G control and power supply for 8 luminaires. Simplifies wiring: a single box at the pole base handles both control and electrical distribution. Recommended for poles 50 ft and taller.",
+          "SMART_ZONE": "Local Wifi boxes orchestrated by a single centralized 5G gateway for the whole site. Each box talks Wifi to its 8 luminaires; one 5G uplink serves the entire project. Drastically reduces recurring data plan costs on large multi-pole installations.",
+          "SMART_POWERBOX_BT": "Control + power box driving 8 luminaires over Bluetooth. No recurring data plan — operated locally via mobile app or dedicated gateway. Ideal for sites without cellular coverage or to eliminate long-term subscription fees."
+        }
+      },
+      "crossarms": {
+        "title": "Replace crossarms?",
+        "description": "Do you want to replace existing crossarms during the install?",
+        "yes": "Yes, replace",
+        "no": "No, keep"
+      }
+    }
+  },
+  "TerrainCard": {
+    "noName": "No name",
+    "noCapture": "(no capture)",
+    "complete": "Complete",
+    "draft": "Draft",
+    "surface": "Surface",
+    "polesLabel": "Poles",
+    "edit": "Edit",
+    "removeAria": "Remove"
+  },
+  "TerrainList": {
+    "title": "My fields",
+    "subtitle": "Add each field to be equipped. For each field: address, satellite capture, perimeter and pole placement.",
+    "hintEmpty": "Click \"Add a field\" to start.",
+    "hintCount": "{count} field saved",
+    "hintCountPlural": "{count} fields saved",
+    "incompleteHint": "Incomplete field(s): {names}. Complete every step (identity, perimeter, poles, configuration) before continuing.",
+    "saved": "Field \"{name}\" saved.",
+    "deleted": "Field removed.",
+    "missingKey": "Google Maps key must be configured in .env.local.",
+    "confirmDeleteTitle": "Delete this field?",
+    "confirmDeleteBody": "\"{name}\" and all its data will be permanently deleted.",
+    "confirmDeleteConfirm": "Yes, delete",
+    "addTitle": "Add a field",
+    "addSubtitle": "Type the address, capture the satellite view, draw the field and place the poles."
+  },
   "Estimation": {
     "title": "Estimation tool",
     "subtitle": "Standards compliance and LED conversion — municipal sports lighting",
     "stepLabel": "Step {current} of {total}",
     "next": "Next",
     "previous": "Previous",
-    "submit": "Generate estimate",
+    "submit": "Send the report by email",
     "saveDraft": "Save draft",
     "steps": {
-      "project": "Project",
-      "address": "Address",
-      "fields": "Fields",
-      "poles": "Poles",
-      "configuration": "Configuration",
-      "summary": "Summary"
+      "terrains": "My fields",
+      "summary": "Summary",
+      "contact": "Receive the report"
     },
     "step1": {
-      "title": "Project information",
-      "subtitle": "Identify the project and the contact person.",
-      "projectName": "Project name",
-      "projectNamePh": "e.g. Lafontaine Park — phase 2",
-      "municipality": "Municipality",
-      "municipalityPh": "e.g. City of Montréal",
-      "contactName": "Contact name",
-      "contactNamePh": "First Last",
-      "contactEmail": "Contact email",
-      "contactEmailPh": "name@municipality.qc.ca"
-    },
-    "step2": {
       "title": "Park address",
       "subtitle": "Enter the civic address of the park to be equipped. The map shows a satellite view for visual confirmation.",
       "address": "Civic address",
       "addressPh": "e.g. 3819 Calixa-Lavallée Ave, Montréal, QC",
-      "mapHint": "Tip: in Google Maps, right-click > Measure distance to estimate field surface."
+      "mapHint": "Tip: in Google Maps, right-click > Measure distance to estimate field surface.",
+      "captureButton": "Capture view",
+      "recaptureButton": "Recapture",
+      "capturing": "Capturing…",
+      "captureSuccess": "View captured.",
+      "captureSelectAddressFirst": "Enter a complete address first",
+      "captureFailed": "Capture failed",
+      "hintTypeAddress": "Type a Quebec address. The map centers automatically.",
+      "viewCaptured": "View captured",
+      "previewCaption": "Capture preview (session)"
     },
-    "step3": {
+    "step2": {
       "title": "Sports fields",
       "subtitle": "Add each field to be equipped. The IES class determines required illuminance levels.",
       "addField": "Add a field",
@@ -110,7 +249,7 @@
       "surfaceM2": "Surface (m²)",
       "surfaceM2Hint": "Measured on Google Maps or municipal blueprint."
     },
-    "step4": {
+    "step3": {
       "title": "Existing poles",
       "subtitle": "For each field, list the existing poles. The 1-for-1 replacement scenario uses this data.",
       "addPole": "Add a pole",
@@ -124,7 +263,7 @@
       "existingPowerW": "Unit power (W)",
       "voltage": "Voltage"
     },
-    "step5": {
+    "step4": {
       "title": "Product configuration",
       "subtitle": "For each field, choose the Lightpro OM module and options.",
       "module": "Module",
@@ -139,9 +278,9 @@
       "withRegulation": "Regulation and metering (HQ-OSE eligible)",
       "hqOseEligible": "My organization is eligible for HQ-OSE 5.1"
     },
-    "step6": {
+    "step5": {
       "title": "Budget summary",
-      "subtitle": "Estimate for fixtures, accessories, control and engineering. Installation excluded.",
+      "subtitle": "Preview of your estimate. On the next step, fill in your contact info to receive the detailed report by email.",
       "scenarioA": "Scenario A — 1-for-1 replacement",
       "scenarioB": "Scenario B — IES RP-6-22 compliance",
       "verdictGo": "Feasible with existing poles",
@@ -174,9 +313,28 @@
         "Taxes (GST / QST — shown separately)"
       ],
       "disclaimer": "This estimate is generated automatically for preliminary budgeting purposes and covers only the supply of fixtures, accessories, control system and engineering hours. Installation costs (crane, electrician, hookup, removal of existing fixtures, etc.) are not included and must be obtained separately from a certified installer. Quantities, configurations, illuminance levels and prices may vary following a technical visit, a detailed photometric study (AGI32 or equivalent), a load capacity verification of the existing poles, and an analysis of site-specific constraints. Lightbase cannot be held responsible for differences between this estimate and the final commercial offer.",
-      "downloadPdf": "Download PDF",
-      "requestQuote": "Request an official quote",
-      "restart": "Start over"
+      "continueToContact": "Receive report by email"
+    },
+    "step6": {
+      "title": "Receive your report by email",
+      "subtitle": "Fill in your contact info — we send you the detailed report immediately, no commitment.",
+      "projectName": "Project name",
+      "projectNamePh": "e.g. Lafontaine Park — phase 2",
+      "municipality": "Municipality",
+      "municipalityPh": "e.g. City of Montréal",
+      "contactName": "Contact name",
+      "contactNamePh": "First Last",
+      "contactEmail": "Contact email",
+      "contactEmailPh": "name@municipality.qc.ca",
+      "consent": "I agree that Lightbase may use this information to contact me about this project (Law 25).",
+      "summaryRecap": "Estimate recap",
+      "submit": "Send the report by email",
+      "submitting": "Sending…",
+      "successTitle": "Report sent!",
+      "successBody": "Check your inbox ({email}). Our team may follow up with an official quote or a detailed study.",
+      "restart": "Start a new estimate",
+      "errorTitle": "Submission error",
+      "errorBody": "Something went wrong. Check your information or try again."
     }
   },
   "Sports": {
@@ -269,6 +427,7 @@
     "BASE": "Base control (all-in-one)",
     "SMART_POLE": "Smart Pole",
     "SMART_POWERBOX": "Smart Powerbox",
-    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)"
+    "SMART_ZONE": "Smart Zone (Wi-Fi TCP/IP)",
+    "SMART_POWERBOX_BT": "Smart Powerbox Bluetooth"
   }
 }

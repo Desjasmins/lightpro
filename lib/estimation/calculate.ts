@@ -139,15 +139,11 @@ function totalsForField(
 export function calculateEstimation(
   data: FullEstimation,
 ): EstimationResult {
-  const polesByFieldId = new Map(
-    data.poles.map((p) => [p.fieldId, p.poles]),
-  );
-
   const fields: FieldBreakdown[] = data.fields.map((f) => {
     const cfg = data.configurations.find((c) => c.fieldId === f.id) ??
       // safe fallback (should not happen, ConfigurationStep ensures coverage)
       ({
-        fieldId: f.id!,
+        fieldId: f.id,
         ...matchProduct(400),
         optic: "D30" as const,
         cct: "K4000" as const,
@@ -160,8 +156,7 @@ export function calculateEstimation(
         hqOseEligible: false,
       });
 
-    const poles = polesByFieldId.get(f.id!) ?? [];
-    return totalsForField(f.id!, f.name, poles, cfg);
+    return totalsForField(f.id, f.name, f.poles, cfg);
   });
 
   const scenarioATotalQty = fields.reduce((a, f) => a + f.qty, 0);

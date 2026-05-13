@@ -64,6 +64,10 @@ export const visors = [
   "VLS_VN",
 ] as const;
 
+/** Simplified visor choices exposed to the user on the configuration tab. */
+export const visorsSimple = ["VN", "VSS", "VLS"] as const;
+export type VisorSimple = (typeof visorsSimple)[number];
+
 export const brackets = ["BTU", "BTUE", "BTR", "BTE"] as const;
 
 export const controls = [
@@ -71,6 +75,7 @@ export const controls = [
   "SMART_POLE",
   "SMART_POWERBOX",
   "SMART_ZONE",
+  "SMART_POWERBOX_BT",
 ] as const;
 
 export const projectStepSchema = z.object({
@@ -81,24 +86,11 @@ export const projectStepSchema = z.object({
 });
 export type ProjectStepValues = z.infer<typeof projectStepSchema>;
 
-export const addressStepSchema = z.object({
-  address: z.string().min(5, "Required").max(240),
+export const polygonPointSchema = z.object({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
 });
-export type AddressStepValues = z.infer<typeof addressStepSchema>;
-
-export const fieldSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2, "Required").max(120),
-  sportType: z.enum(sportTypes),
-  iesClass: z.enum(iesClasses),
-  surfaceM2: z.coerce.number().positive("Must be positive").max(200000),
-});
-export type FieldValues = z.infer<typeof fieldSchema>;
-
-export const fieldsStepSchema = z.object({
-  fields: z.array(fieldSchema).min(1, "At least one field required"),
-});
-export type FieldsStepValues = z.infer<typeof fieldsStepSchema>;
+export type PolygonPoint = z.infer<typeof polygonPointSchema>;
 
 export const poleSchema = z.object({
   id: z.string().optional(),
@@ -110,18 +102,10 @@ export const poleSchema = z.object({
   nbExistingFixtures: z.coerce.number().int().min(0).max(99),
   existingPowerW: z.coerce.number().int().min(0).max(5000),
   voltage: z.enum(voltages),
+  positionX: z.coerce.number().min(0).max(1).optional(),
+  positionY: z.coerce.number().min(0).max(1).optional(),
 });
 export type PoleValues = z.infer<typeof poleSchema>;
-
-export const polesPerFieldSchema = z.object({
-  fieldId: z.string(),
-  poles: z.array(poleSchema).min(1, "At least one pole required"),
-});
-
-export const polesStepSchema = z.object({
-  byField: z.array(polesPerFieldSchema),
-});
-export type PolesStepValues = z.infer<typeof polesStepSchema>;
 
 export const configurationSchema = z.object({
   fieldId: z.string(),
@@ -139,17 +123,51 @@ export const configurationSchema = z.object({
 });
 export type ConfigurationValues = z.infer<typeof configurationSchema>;
 
-export const configurationStepSchema = z.object({
-  configurations: z.array(configurationSchema).min(1),
-  hqOseEligible: z.boolean(),
+/**
+ * Per-field configuration captured in the 4th tab of the terrain editor.
+ * The remaining ConfigurationValues fields (module, power, optic, …) are
+ * auto-derived from the poles in lib/estimation/config-derive.ts.
+ */
+export const fieldConfigSchema = z.object({
+  bracket: z.enum(brackets),
+  visor: z.enum(visorsSimple),
+  control: z.enum(controls),
+  replaceCrossarms: z.boolean(),
 });
-export type ConfigurationStepValues = z.infer<typeof configurationStepSchema>;
+export type FieldConfigValues = z.infer<typeof fieldConfigSchema>;
+
+/**
+ * A full self-contained Field — has its own address, capture, perimeter, poles,
+ * and per-field product configuration.
+ */
+export const fieldSchema = z.object({
+  id: z.string(),
+  // Identity
+  name: z.string().min(2, "Required").max(120),
+  sportType: z.enum(sportTypes),
+  iesClass: z.enum(iesClasses),
+  // Geographic
+  address: z.string().min(5, "Required").max(240),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  placeId: z.string().optional(),
+  // Capture metadata (session-only screenshotDataUrl is in the store, not in the schema)
+  captureZoom: z.number().int().min(1).max(20).optional(),
+  captureWidthPx: z.number().int().min(64).max(2048).optional(),
+  captureHeightPx: z.number().int().min(64).max(2048).optional(),
+  // Perimeter (polygon vertices in normalized 0..1 coords)
+  perimeter: z.array(polygonPointSchema).optional(),
+  surfaceM2: z.coerce.number().positive("Must be positive").max(500000),
+  // Poles
+  poles: z.array(poleSchema),
+  // Per-field configuration (optional during draft, required to reach summary)
+  config: fieldConfigSchema.optional(),
+});
+export type FieldValues = z.infer<typeof fieldSchema>;
 
 export const fullEstimationSchema = z.object({
   project: projectStepSchema,
-  address: addressStepSchema,
   fields: z.array(fieldSchema).min(1),
-  poles: z.array(polesPerFieldSchema),
   configurations: z.array(configurationSchema).min(1),
   hqOseEligible: z.boolean(),
 });

@@ -7,13 +7,13 @@ export function Solutions() {
   const products = [
     {
       key: "om300",
-      img: "/lightbase/lightpro.jpg",
+      img: "/lightbase/lb-solutions-om400-stack.jpg",
       modules: ["SIMPLE", "DOUBLE", "QUADRUPLE"],
       available: true,
     },
     {
       key: "om400",
-      img: "/lightbase/lightcell.jpg",
+      img: "/lightbase/lb-solutions-om300-pole.jpg",
       modules: ["SIMPLE"],
       available: true,
     },

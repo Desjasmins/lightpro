@@ -9,11 +9,11 @@ export function CTA() {
   return (
     <section className="relative isolate overflow-hidden bg-black text-white py-32 md:py-40">
       <Image
-        src="/lightbase/cta-bg.jpg"
+        src="/lightbase/lb-cta-pickleball-night.jpg"
         alt=""
         fill
         sizes="100vw"
-        className="object-cover opacity-50"
+        className="object-cover opacity-60"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
       <div className="lb-container relative z-10 max-w-3xl">
