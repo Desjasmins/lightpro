@@ -36,10 +36,12 @@ export async function captureSatelliteMap(
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
+    console.error(
+      "[capture] Missing Google Maps API key (GOOGLE_MAPS_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)",
+    );
     return {
       ok: false,
-      error:
-        "Maps API key not configured. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in .env.local.",
+      error: "Service temporarily unavailable. Please try again later.",
     };
   }
 

@@ -31,7 +31,9 @@ const emptyDraft: EstimationDraft = {
   step: 1,
   fields: [],
   captures: {},
-  hqOseEligible: false,
+  // By default we assume the organisation qualifies for the HQ-OSE subsidy
+  // (municipal / institutional clients almost always do). The user can opt out.
+  hqOseEligible: true,
 };
 
 function readDraft(): EstimationDraft {

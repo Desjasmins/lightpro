@@ -8,13 +8,11 @@ import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
 import {
-  fullEstimationSchema,
   projectStepSchema,
   type ProjectStepValues,
 } from "@/lib/estimation/schema";
-import { deriveConfigurations } from "@/lib/estimation/config-derive";
 import type { EstimationDraft } from "@/lib/estimation/store";
-import { calculateEstimation } from "@/lib/estimation/calculate";
+import { estimateProject } from "@/lib/estimation/estimate";
 import { submitEstimation } from "@/app/actions/estimation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,22 +62,18 @@ export function Step4Contact({
 
   const recap = useMemo(() => {
     if (draft.fields.length === 0) return null;
-    const configurations = deriveConfigurations(
-      draft.fields,
-      draft.hqOseEligible,
+    const project = estimateProject(draft.fields);
+    const totalA = project.totalScenarioA;
+    const totalB = project.totalScenarioB ?? totalA;
+    const qtyA = project.fields.reduce(
+      (a, f) => a + f.scenarioA.qtyLuminaires,
+      0,
     );
-    if (configurations.length === 0) return null;
-    return calculateEstimation({
-      project: {
-        name: draft.project?.name ?? "",
-        municipality: draft.project?.municipality ?? "",
-        contactName: draft.project?.contactName ?? "",
-        contactEmail: draft.project?.contactEmail ?? "x@example.com",
-      },
-      fields: draft.fields,
-      configurations,
-      hqOseEligible: draft.hqOseEligible,
-    });
+    const qtyB = project.fields.reduce(
+      (a, f) => a + (f.scenarioB?.qtyLuminaires ?? f.scenarioA.qtyLuminaires),
+      0,
+    );
+    return { totalA, totalB, qtyA, qtyB };
   }, [draft]);
 
   const form = useForm<ContactFormValues>({
@@ -103,24 +97,13 @@ export function Step4Contact({
       };
       update({ project });
 
-      const fullPayload = {
-        project,
-        fields: draft.fields,
-        configurations: deriveConfigurations(draft.fields, draft.hqOseEligible),
-        hqOseEligible: draft.hqOseEligible,
-      };
-
-      const parsed = fullEstimationSchema.safeParse(fullPayload);
-      if (!parsed.success) {
-        throw new Error(
-          locale === "en"
-            ? "Estimation data is incomplete — go back and check previous steps."
-            : "Données incomplètes — vérifiez les étapes précédentes.",
-        );
-      }
-
       const response = await submitEstimation(
-        parsed.data,
+        {
+          project,
+          fields: draft.fields,
+          hqOseEligible: draft.hqOseEligible,
+          locale: locale === "en" ? "en" : "fr",
+        },
         locale === "en" ? "en" : "fr",
       );
       if (!response.ok) throw new Error(response.error);
@@ -185,23 +168,13 @@ export function Step4Contact({
           </CardHeader>
           <CardContent className="grid gap-3 text-sm">
             <Row
-              label={tStep5("totalProject")}
-              value={formatCad(recap.totalCostAfterRebateCad, locale)}
+              label={tStep5("totalProjectA")}
+              value={`${recap.qtyA} × LP — ${formatCad(recap.totalA, locale)}`}
               big
             />
             <Row
-              label={tStep5("totalLuminaires")}
-              value={`${recap.scenarioATotalQty} × ${formatCad(
-                recap.scenarioATotalPriceCad /
-                  Math.max(1, recap.scenarioATotalQty),
-                locale,
-              )}`}
-            />
-            <Row
-              label={tStep5("energySavings")}
-              value={`${new Intl.NumberFormat(
-                locale === "en" ? "en-CA" : "fr-CA",
-              ).format(Math.round(recap.energySavingsKwhYear))} ${tStep5("kwhYear")}`}
+              label={tStep5("totalProjectB")}
+              value={`${recap.qtyB} × LP — ${formatCad(recap.totalB, locale)}`}
             />
           </CardContent>
         </Card>

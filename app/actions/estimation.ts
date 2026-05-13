@@ -1,18 +1,30 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 import {
-  fullEstimationSchema,
-  type FullEstimation,
+  fieldSchema,
+  projectStepSchema,
+  type ProjectStepValues,
+  type FieldValues,
 } from "@/lib/estimation/schema";
-import { calculateEstimation } from "@/lib/estimation/calculate";
-import type { EstimationResult } from "@/lib/estimation/calculate";
+import { estimateProject } from "@/lib/estimation/estimate";
+import { sendEstimationEmail } from "@/lib/email/send-estimation";
+
+/**
+ * Schema for the server-side input. Zod validates the entire payload before
+ * any side-effects (DB write, email send). Form validation in the client is
+ * decoupled — the server is the source of truth.
+ */
+const submitSchema = z.object({
+  project: projectStepSchema,
+  fields: z.array(fieldSchema).min(1, "At least one field is required"),
+  hqOseEligible: z.boolean(),
+  locale: z.enum(["fr", "en"]).default("fr"),
+});
 
 export interface SubmitSuccess {
   ok: true;
-  projectId: string;
-  result: EstimationResult;
+  emailId: string;
 }
 
 export interface SubmitFailure {
@@ -30,9 +42,14 @@ function getErrorMessage(error: unknown): string {
 
 export async function submitEstimation(
   raw: unknown,
-  locale: "fr" | "en" = "fr",
+  localeArg?: "fr" | "en",
 ): Promise<SubmitResponse> {
-  const parsed = fullEstimationSchema.safeParse(raw);
+  const parsed = submitSchema.safeParse(
+    typeof raw === "object" && raw !== null && "locale" in raw
+      ? raw
+      : { ...(raw as object), locale: localeArg ?? "fr" },
+  );
+
   if (!parsed.success) {
     return {
       ok: false,
@@ -44,94 +61,22 @@ export async function submitEstimation(
     };
   }
 
-  const data: FullEstimation = parsed.data;
-  const result = calculateEstimation(data);
+  const { project, fields, hqOseEligible, locale } = parsed.data;
+  const projectInput: ProjectStepValues = project;
+  const fieldsInput: FieldValues[] = fields;
+
+  const estimate = estimateProject(fieldsInput);
 
   try {
-    const project = await prisma.project.create({
-      data: {
-        locale: locale === "en" ? "EN" : "FR",
-        name: data.project.name,
-        municipality: data.project.municipality,
-        contactName: data.project.contactName,
-        contactEmail: data.project.contactEmail,
-        // The project-level address is the address of the first field for
-        // backwards compat (the schema still has Project.address).
-        address: data.fields[0]?.address ?? "",
-        lat: data.fields[0]?.lat ?? null,
-        lng: data.fields[0]?.lng ?? null,
-        hqOseEligible: data.hqOseEligible,
-        status: "SUBMITTED",
-        fields: {
-          create: data.fields.map((f) => {
-            const cfg = data.configurations.find((c) => c.fieldId === f.id);
-            return {
-              name: f.name,
-              sportType: f.sportType,
-              iesClass: f.iesClass,
-              surfaceM2: f.surfaceM2,
-              perimeterGeoJson: f.perimeter
-                ? (f.perimeter as unknown as Prisma.InputJsonValue)
-                : Prisma.JsonNull,
-              poles: {
-                create: f.poles.map((p) => ({
-                  index: p.index,
-                  type: p.type,
-                  heightM: p.heightM,
-                  mountType: p.mountType,
-                  nbCrossarms: p.nbCrossarms,
-                  nbExistingFixtures: p.nbExistingFixtures,
-                  existingPowerW: p.existingPowerW,
-                  voltage: p.voltage,
-                  positionX: p.positionX ?? null,
-                  positionY: p.positionY ?? null,
-                })),
-              },
-              configuration: cfg
-                ? {
-                    create: {
-                      module: cfg.module,
-                      power: cfg.power,
-                      optic: cfg.optic,
-                      cct: cfg.cct,
-                      cri: cfg.cri,
-                      voltage: cfg.voltage,
-                      visor: cfg.visor,
-                      bracket: cfg.bracket,
-                      withRegulation: cfg.withRegulation,
-                      control: cfg.control,
-                    },
-                  }
-                : undefined,
-            };
-          }),
-        },
-        result: {
-          create: {
-            scenarioATotalQty: result.scenarioATotalQty,
-            scenarioATotalPowerW: result.scenarioATotalPowerW,
-            scenarioATotalPriceCad: result.scenarioATotalPriceCad,
-            scenarioBTotalQty: result.scenarioBTotalQty,
-            scenarioBTotalPowerW: result.scenarioBTotalPowerW,
-            scenarioBTotalPriceCad: result.scenarioBTotalPriceCad,
-            verdictGoNoGo: result.verdictGoNoGo,
-            engineeringHours: result.engineeringHours,
-            supervisionHours: result.supervisionHours,
-            engineeringCostCad: result.engineeringCostCad,
-            hqOseRebateCad: result.hqOseRebateCad,
-            totalCostBeforeRebateCad: result.totalCostBeforeRebateCad,
-            totalCostAfterRebateCad: result.totalCostAfterRebateCad,
-            energySavingsKwhYear: result.energySavingsKwhYear,
-            ghgReductionKgYear: result.ghgReductionKgYear,
-            breakdown: result.fields as unknown as Prisma.InputJsonValue,
-          },
-        },
-      },
-      select: { id: true },
+    const { id } = await sendEstimationEmail({
+      project: projectInput,
+      estimate,
+      locale,
+      hqOseEligible,
     });
-
-    return { ok: true, projectId: project.id, result };
+    return { ok: true, emailId: id };
   } catch (error: unknown) {
+    console.error("[submitEstimation] email send failed", error);
     return {
       ok: false,
       error: getErrorMessage(error),
