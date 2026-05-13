@@ -42,6 +42,7 @@ export const poleTypes = [
 export const mountTypes = ["TRAVERSE", "FUT"] as const;
 
 export const voltages = ["V120", "V220", "V277", "V347", "V480"] as const;
+export type Voltage = (typeof voltages)[number];
 
 export const modules = ["SIMPLE", "DOUBLE", "QUADRUPLE"] as const;
 
@@ -69,6 +70,7 @@ export const visorsSimple = ["VN", "VSS", "VLS"] as const;
 export type VisorSimple = (typeof visorsSimple)[number];
 
 export const brackets = ["BTU", "BTUE", "BTR", "BTE"] as const;
+export type Bracket = (typeof brackets)[number];
 
 export const controls = [
   "BASE",
@@ -77,6 +79,7 @@ export const controls = [
   "SMART_ZONE",
   "SMART_POWERBOX_BT",
 ] as const;
+export type ControlArchitecture = (typeof controls)[number];
 
 export const projectStepSchema = z.object({
   name: z.string().min(2, "Required").max(120),
