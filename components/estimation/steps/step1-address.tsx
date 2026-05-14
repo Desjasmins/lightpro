@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { toast } from "sonner";
-import type { EstimationDraft, FieldCapture } from "@/lib/estimation/store";
+import type { EstimationDraft } from "@/lib/estimation/store";
 import type { FieldValues } from "@/lib/estimation/schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface StepProps {
   draft: EstimationDraft;
-  upsertField: (field: FieldValues, capture?: FieldCapture) => void;
+  upsertField: (field: FieldValues) => void;
   removeField: (fieldId: string) => void;
   onNext: () => void;
 }
@@ -50,9 +50,6 @@ export function Step1Address({
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorField, setEditorField] = useState<FieldValues | null>(null);
-  const [editorCapture, setEditorCapture] = useState<FieldCapture | undefined>(
-    undefined,
-  );
   const [editorColor, setEditorColor] = useState<string>(FIELD_COLORS[0]!);
   const [pendingDelete, setPendingDelete] = useState<FieldValues | null>(null);
 
@@ -60,7 +57,6 @@ export function Step1Address({
     const seed = emptyField();
     seed.name = `Terrain ${draft.fields.length + 1}`;
     setEditorField(seed);
-    setEditorCapture(undefined);
     setEditorColor(colorForIndex(draft.fields.length));
     setEditorOpen(true);
   }
@@ -68,16 +64,14 @@ export function Step1Address({
   function openForEdit(field: FieldValues) {
     const idx = draft.fields.findIndex((f) => f.id === field.id);
     setEditorField(field);
-    setEditorCapture(draft.captures[field.id]);
     setEditorColor(colorForIndex(idx === -1 ? draft.fields.length : idx));
     setEditorOpen(true);
   }
 
-  function handleSave(field: FieldValues, capture?: FieldCapture) {
-    upsertField(field, capture);
+  function handleSave(field: FieldValues) {
+    upsertField(field);
     setEditorOpen(false);
     setEditorField(null);
-    setEditorCapture(undefined);
     toast.success(tList("saved", { name: field.name }));
   }
 
@@ -99,7 +93,7 @@ export function Step1Address({
       f.surfaceM2 > 0 &&
       f.poles.length >= 1 &&
       Boolean(f.config) &&
-      Boolean(draft.captures[f.id])
+      f.lockedZoom != null
     );
   }
   const incompleteFields = draft.fields.filter((f) => !isFieldComplete(f));
@@ -118,7 +112,7 @@ export function Step1Address({
   }
 
   return (
-    <APIProvider apiKey={apiKey} libraries={["places"]}>
+    <APIProvider apiKey={apiKey} libraries={["places", "marker"]}>
       <div className="space-y-8">
         <header className="space-y-2">
           <h1 className="lb-h2">{tList("title")}</h1>
@@ -132,7 +126,6 @@ export function Step1Address({
               key={field.id}
               field={field}
               color={colorForIndex(i)}
-              captureDataUrl={draft.captures[field.id]?.dataUrl}
               onEdit={() => openForEdit(field)}
               onRemove={() => handleRemove(field)}
             />
@@ -177,14 +170,12 @@ export function Step1Address({
           open={editorOpen}
           onClose={() => setEditorOpen(false)}
           onSave={handleSave}
-          onCaptureCommit={(field, capture) => {
-            // Persist the new capture immediately so the terrain card image
-            // refreshes even if the user closes the dialog mid-flow.
-            upsertField(field, capture);
-            setEditorCapture(capture);
+          onChangeCommit={(field) => {
+            // Persist edits immediately so the terrain card reflects any
+            // changes even if the user closes the dialog mid-flow.
+            upsertField(field);
           }}
           initial={editorField}
-          capture={editorCapture}
           color={editorColor}
         />
       ) : null}

@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+/**
+ * Poles tab — places fûts on a frozen Maps JS view.
+ *
+ * Pole positions are stored as real-world lat/lng. Markers are draggable via
+ * Google's `AdvancedMarker`; clicking the map adds a new pole at the click
+ * latlng; clicking an existing marker opens the editor popup.
+ */
+
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AdvancedMarker, Map, useMap } from "@vis.gl/react-google-maps";
 import {
   poleTypes,
   mountTypes,
   voltages,
   type FieldValues,
+  type GeoPoint,
   type PoleValues,
 } from "@/lib/estimation/schema";
 import { Button } from "@/components/ui/button";
@@ -19,12 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MapPolygon } from "@/components/estimation/map/map-polygon";
 import { AlertTriangle, Check, Pin, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PolesTabProps {
   value: FieldValues;
-  captureDataUrl: string;
   onChange: (patch: Partial<FieldValues>) => void;
   color: string;
 }
@@ -43,12 +53,28 @@ const defaults = {
   voltage: "V480" as const,
 };
 
-export function PolesTab({
-  value,
-  captureDataUrl,
-  onChange,
-  color,
-}: PolesTabProps) {
+interface MapClickHandlerProps {
+  onMapClick: (point: GeoPoint) => void;
+}
+
+function MapClickHandler({ onMapClick }: MapClickHandlerProps) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    const listener = map.addListener(
+      "click",
+      (ev: google.maps.MapMouseEvent) => {
+        const ll = ev.latLng;
+        if (!ll) return;
+        onMapClick({ lat: ll.lat(), lng: ll.lng() });
+      },
+    );
+    return () => listener.remove();
+  }, [map, onMapClick]);
+  return null;
+}
+
+export function PolesTab({ value, onChange, color }: PolesTabProps) {
   const t = useTranslations("TerrainEditor.poles");
   const tPoleTypes = useTranslations("PoleTypes");
   const tMount = useTranslations("MountTypes");
@@ -64,25 +90,25 @@ export function PolesTab({
     voltages.map((v) => [v, tVoltage(v)]),
   );
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const draggingRef = useRef<string | null>(null);
-  const draggedRef = useRef<boolean>(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const poles = value.poles;
-  const perimeter = value.perimeter ?? [];
+  const perimeter = (value.perimeter ?? []) as GeoPoint[];
 
-  function addPoleAt(x: number, y: number) {
-    const newPole: PoleValues = {
-      id: genId(),
-      index: poles.length + 1,
-      ...defaults,
-      positionX: x,
-      positionY: y,
-    };
-    onChange({ poles: [...poles, newPole] });
-    setEditingId(newPole.id!);
-  }
+  const addPoleAt = useCallback(
+    (point: GeoPoint) => {
+      const newPole: PoleValues = {
+        id: genId(),
+        index: poles.length + 1,
+        ...defaults,
+        lat: point.lat,
+        lng: point.lng,
+      };
+      onChange({ poles: [...poles, newPole] });
+      setEditingId(newPole.id!);
+    },
+    [poles, onChange],
+  );
 
   function patchPole(id: string, patch: Partial<PoleValues>) {
     onChange({
@@ -99,52 +125,6 @@ export function PolesTab({
     if (editingId === id) setEditingId(null);
   }
 
-  function handleCanvasClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (draggingRef.current) return;
-    if ((e.target as HTMLElement).closest("[data-pole-marker]")) return;
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    addPoleAt(x, y);
-  }
-
-  function startDrag(id: string, e: React.PointerEvent) {
-    e.stopPropagation();
-    draggingRef.current = id;
-    draggedRef.current = false;
-    const el = e.currentTarget as HTMLElement;
-    el.setPointerCapture(e.pointerId);
-  }
-
-  function onDrag(e: React.PointerEvent) {
-    if (!draggingRef.current) return;
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    draggedRef.current = true;
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-    patchPole(draggingRef.current, { positionX: x, positionY: y });
-  }
-
-  function endDrag(e: React.PointerEvent) {
-    const el = e.currentTarget as HTMLElement;
-    if (el.hasPointerCapture(e.pointerId)) {
-      el.releasePointerCapture(e.pointerId);
-    }
-    const id = draggingRef.current;
-    const moved = draggedRef.current;
-    setTimeout(() => {
-      draggingRef.current = null;
-      draggedRef.current = false;
-    }, 50);
-    // If pointer was pressed and released without moving, treat as a click on
-    // the marker → open editor for that pole.
-    if (id && !moved) {
-      setEditingId(id);
-    }
-  }
-
   // Close the editor with Escape.
   useEffect(() => {
     if (!editingId) return;
@@ -155,7 +135,7 @@ export function PolesTab({
     return () => document.removeEventListener("keydown", onKey);
   }, [editingId]);
 
-  if (!captureDataUrl) {
+  if (value.lockedZoom == null || value.lat === 0) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center text-sm text-muted-foreground max-w-md">
@@ -167,92 +147,82 @@ export function PolesTab({
   }
 
   const editingPole = poles.find((p) => p.id === editingId);
-  const polygonPoints = perimeter
-    .map((p) => `${p.x * 100},${p.y * 100}`)
-    .join(" ");
+  const center = { lat: value.lat, lng: value.lng };
 
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-[1fr_380px] overflow-hidden">
-      {/* MAP — fills the left area */}
-      <div className="relative bg-black/70 overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center p-6">
-          <div
-            ref={containerRef}
-            onClick={handleCanvasClick}
-            className="relative max-w-full max-h-full overflow-hidden rounded-lg border border-white/10 shadow-2xl cursor-crosshair select-none"
-            style={{
-              aspectRatio: `${value.captureWidthPx ?? 1280} / ${value.captureHeightPx ?? 800}`,
-              width: "100%",
-              height: "auto",
-              maxHeight: "100%",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={captureDataUrl}
-              alt=""
-              className="block w-full h-full object-contain pointer-events-none select-none"
-              draggable={false}
-            />
-            {perimeter.length >= 3 ? (
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-              >
-                <polygon
-                  points={polygonPoints}
-                  fill={color}
-                  fillOpacity={0.15}
-                  stroke={color}
-                  strokeWidth={0.3}
-                  strokeDasharray="0.6 0.6"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </svg>
-            ) : null}
+      {/* MAP — frozen satellite (same crosshair-cursor pattern as Perimeter) */}
+      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair [&_.gm-style_*]:!cursor-crosshair">
+        <Map
+          defaultCenter={center}
+          defaultZoom={value.lockedZoom}
+          mapTypeId="satellite"
+          gestureHandling="none"
+          disableDefaultUI={true}
+          mapTypeControl={false}
+          streetViewControl={false}
+          fullscreenControl={false}
+          zoomControl={false}
+          clickableIcons={false}
+          keyboardShortcuts={false}
+          draggableCursor="crosshair"
+          draggingCursor="crosshair"
+          mapId="lightbase-estimation"
+          className="h-full w-full"
+        >
+          <MapClickHandler onMapClick={addPoleAt} />
 
-            {poles.map((pole) => {
-              if (pole.positionX == null || pole.positionY == null) return null;
-              const isEditing = pole.id === editingId;
-              return (
-                <button
-                  key={pole.id}
-                  type="button"
-                  data-pole-marker
-                  onPointerDown={(e) => startDrag(pole.id!, e)}
-                  onPointerMove={onDrag}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
+          {/* Perimeter outline (informational) */}
+          {perimeter.length >= 3 ? (
+            <MapPolygon
+              paths={perimeter}
+              color={color}
+              fillOpacity={0.12}
+              strokeWeight={2}
+            />
+          ) : null}
+
+          {poles.map((pole) => {
+            if (pole.lat == null || pole.lng == null) return null;
+            const isEditing = pole.id === editingId;
+            return (
+              <AdvancedMarker
+                key={pole.id}
+                position={{ lat: pole.lat, lng: pole.lng }}
+                draggable
+                onClick={() => setEditingId(pole.id!)}
+                onDragEnd={(ev) => {
+                  const ll = ev.latLng;
+                  if (!ll) return;
+                  patchPole(pole.id!, { lat: ll.lat(), lng: ll.lng() });
+                }}
+              >
+                <span
                   className={cn(
-                    "absolute -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-[8px] font-semibold text-black shadow ring-1 transition-transform cursor-grab active:cursor-grabbing",
-                    isEditing ? "ring-white scale-125" : "ring-black/40",
+                    "inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold text-black ring-1 transition-transform shadow",
+                    isEditing
+                      ? "ring-white scale-125"
+                      : "ring-black/40 hover:scale-110",
                   )}
-                  style={{
-                    left: `${pole.positionX * 100}%`,
-                    top: `${pole.positionY * 100}%`,
-                    background: color,
-                    zIndex: isEditing ? 20 : 10,
-                  }}
-                  title={`Fût #${pole.index}`}
+                  style={{ background: color }}
                 >
                   {pole.index}
-                </button>
-              );
-            })}
+                </span>
+              </AdvancedMarker>
+            );
+          })}
+        </Map>
 
-            {poles.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center bg-black/80 px-5 py-3 rounded-full text-white text-sm backdrop-blur shadow-2xl">
-                  {t("clickHint")}
-                </div>
-              </div>
-            ) : null}
+        {poles.length === 0 ? (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center bg-black/80 px-5 py-3 rounded-full text-white text-sm backdrop-blur shadow-2xl">
+              {t("clickHint")}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
 
-      {/* SIDEBAR — instructions + list only; editor is in popup */}
+      {/* SIDEBAR */}
       <aside className="border-l border-border bg-card/30 flex flex-col overflow-hidden">
         <div className="p-6 border-b border-border space-y-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -344,8 +314,6 @@ export function PolesTab({
         ) : null}
       </aside>
 
-      {/* Pole editor popup — rendered inside the tab so it overlays both map
-          and sidebar. z-[80] sits above the terrain editor (z-[60]). */}
       {editingPole ? (
         <PoleEditorPopup
           pole={editingPole}
@@ -397,7 +365,6 @@ function PoleEditorPopup({
         className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-background ring-1 ring-foreground/10 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3 min-w-0">
             <span
@@ -426,7 +393,6 @@ function PoleEditorPopup({
           </Button>
         </header>
 
-        {/* Body */}
         <div className="p-5 space-y-4">
           <div className="space-y-1.5">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -558,7 +524,6 @@ function PoleEditorPopup({
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="flex items-center justify-between gap-2 px-5 py-4 border-t border-border bg-muted/30 rounded-b-2xl">
           <Button
             type="button"

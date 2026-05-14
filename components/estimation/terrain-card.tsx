@@ -1,14 +1,23 @@
 "use client";
 
+/**
+ * Compact preview card for one terrain on the wizard step 1 grid.
+ *
+ * The image area is a mini frozen Maps JS view at the field's locked
+ * lat/lng/zoom (no static image any more). The polygon and pole markers are
+ * drawn on top of the map as native Google Maps overlays.
+ */
+
 import { useTranslations } from "next-intl";
-import type { FieldValues } from "@/lib/estimation/schema";
+import { AdvancedMarker, Map } from "@vis.gl/react-google-maps";
+import type { FieldValues, GeoPoint } from "@/lib/estimation/schema";
 import { Button } from "@/components/ui/button";
-import { Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { MapPolygon } from "@/components/estimation/map/map-polygon";
+import { Check, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 
 interface TerrainCardProps {
   field: FieldValues;
   color: string;
-  captureDataUrl?: string;
   onEdit: () => void;
   onRemove: () => void;
 }
@@ -22,7 +31,6 @@ function formatM2(n: number): string {
 export function TerrainCard({
   field,
   color,
-  captureDataUrl,
   onEdit,
   onRemove,
 }: TerrainCardProps) {
@@ -30,78 +38,77 @@ export function TerrainCard({
   const tSports = useTranslations("Sports");
   const tIes = useTranslations("IesClasses");
 
+  const hasView = field.lockedZoom != null && field.lat !== 0;
   const isComplete =
     field.name.length > 0 &&
     field.surfaceM2 > 0 &&
     field.poles.length > 0 &&
-    Boolean(captureDataUrl);
+    hasView;
 
-  const polygonPoints = (field.perimeter ?? [])
-    .map((p) => `${p.x * 100},${p.y * 100}`)
-    .join(" ");
+  const perimeter = (field.perimeter ?? []) as GeoPoint[];
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/40 transition hover:border-foreground/30 hover:shadow-lg">
-      {/* Image area with overlays */}
+      {/* Mini frozen map */}
       <button
         type="button"
         onClick={onEdit}
         className="relative aspect-video w-full overflow-hidden bg-card cursor-pointer"
         aria-label={`Modifier ${field.name}`}
       >
-        {captureDataUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={captureDataUrl}
-            alt={field.name}
-            className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-[1.03]"
-            draggable={false}
-          />
+        {hasView ? (
+          <div className="absolute inset-0 pointer-events-none">
+            <Map
+              defaultCenter={{ lat: field.lat, lng: field.lng }}
+              defaultZoom={field.lockedZoom!}
+              mapTypeId="satellite"
+              gestureHandling="none"
+              disableDefaultUI={true}
+              mapTypeControl={false}
+              streetViewControl={false}
+              fullscreenControl={false}
+              zoomControl={false}
+              clickableIcons={false}
+              keyboardShortcuts={false}
+              mapId="lightbase-estimation"
+              className="h-full w-full"
+            >
+              {perimeter.length >= 3 ? (
+                <MapPolygon
+                  paths={perimeter}
+                  color={color}
+                  fillOpacity={0.18}
+                  strokeWeight={1.5}
+                />
+              ) : null}
+              {field.poles.map((pole) => {
+                if (pole.lat == null || pole.lng == null) return null;
+                return (
+                  <AdvancedMarker
+                    key={pole.id}
+                    position={{ lat: pole.lat, lng: pole.lng }}
+                  >
+                    <span
+                      className="inline-flex items-center justify-center w-3 h-3 rounded-full text-[7px] font-semibold text-black ring-1 ring-black/30 shadow"
+                      style={{ background: color }}
+                      aria-hidden
+                    >
+                      {pole.index}
+                    </span>
+                  </AdvancedMarker>
+                );
+              })}
+            </Map>
+          </div>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm gap-2">
+            <MapPin size={14} />
             {t("noCapture")}
           </div>
         )}
 
-        {/* Polygon overlay */}
-        {field.perimeter && field.perimeter.length >= 3 ? (
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
-            <polygon
-              points={polygonPoints}
-              fill={color}
-              fillOpacity={0.18}
-              stroke={color}
-              strokeWidth={0.4}
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
-        ) : null}
-
-        {/* Pole markers overlay */}
-        {field.poles.map((pole) => {
-          if (pole.positionX == null || pole.positionY == null) return null;
-          return (
-            <span
-              key={pole.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-2.5 h-2.5 rounded-full text-[6px] font-semibold text-black ring-1 ring-black/30 shadow"
-              style={{
-                left: `${pole.positionX * 100}%`,
-                top: `${pole.positionY * 100}%`,
-                background: color,
-              }}
-              aria-hidden
-            >
-              {pole.index}
-            </span>
-          );
-        })}
-
         {/* Status badge */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10">
           <span
             className="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold text-black shadow-lg"
             style={{ background: color }}
@@ -121,7 +128,7 @@ export function TerrainCard({
         </div>
 
         {/* Bottom gradient for readability */}
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-10" />
       </button>
 
       {/* Info area */}

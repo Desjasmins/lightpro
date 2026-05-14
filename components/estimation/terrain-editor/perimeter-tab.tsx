@@ -1,18 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+/**
+ * Perimeter tab — draws a polygon directly on a frozen Maps JS view.
+ *
+ * The map is rendered with `gestureHandling="none"` and no controls so the
+ * user can't pan/zoom (the satellite view is "frozen" at the lat/lng/zoom
+ * locked in the Identity tab). Clicking the map adds a vertex; vertices are
+ * stored as real lat/lng on the field.
+ *
+ * Surface is computed via spherical-excess formula (lib/estimation/geo.ts).
+ */
+
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { AdvancedMarker, Map, useMap } from "@vis.gl/react-google-maps";
 import { Button } from "@/components/ui/button";
-import {
-  polygonAreaForCapture,
-  type NormalizedPoint,
-} from "@/lib/estimation/geo";
-import type { FieldValues } from "@/lib/estimation/schema";
+import { geoPolygonAreaM2 } from "@/lib/estimation/geo";
+import type { FieldValues, GeoPoint } from "@/lib/estimation/schema";
+import { MapPolygon } from "@/components/estimation/map/map-polygon";
 import { Eraser, Undo2, AlertTriangle, MapPin } from "lucide-react";
 
 interface PerimeterTabProps {
   value: FieldValues;
-  captureDataUrl: string;
   onChange: (patch: Partial<FieldValues>) => void;
   color: string;
 }
@@ -23,41 +32,44 @@ function formatM2(n: number): string {
   }).format(n);
 }
 
+interface MapClickHandlerProps {
+  onMapClick: (point: GeoPoint) => void;
+}
+
+function MapClickHandler({ onMapClick }: MapClickHandlerProps) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    // Raw google.maps click event — `latLng` is a LatLng object whose lat/lng
+    // are functions, not properties. (The @vis.gl/react-google-maps wrapper
+    // only adds the `detail` envelope for its own event props, not for raw
+    // map.addListener calls.)
+    const listener = map.addListener(
+      "click",
+      (ev: google.maps.MapMouseEvent) => {
+        const ll = ev.latLng;
+        if (!ll) return;
+        onMapClick({ lat: ll.lat(), lng: ll.lng() });
+      },
+    );
+    return () => listener.remove();
+  }, [map, onMapClick]);
+  return null;
+}
+
 export function PerimeterTab({
   value,
-  captureDataUrl,
   onChange,
   color,
 }: PerimeterTabProps) {
   const t = useTranslations("TerrainEditor.perimeter");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [hoverPoint, setHoverPoint] = useState<NormalizedPoint | null>(null);
 
-  const vertices = value.perimeter ?? [];
+  const vertices = (value.perimeter ?? []) as GeoPoint[];
 
   const surfaceM2 = useMemo(() => {
-    if (
-      vertices.length < 3 ||
-      value.lat == null ||
-      value.captureZoom == null ||
-      value.captureWidthPx == null ||
-      value.captureHeightPx == null
-    ) {
-      return 0;
-    }
-    return polygonAreaForCapture(vertices, {
-      lat: value.lat,
-      zoom: value.captureZoom,
-      widthPx: value.captureWidthPx,
-      heightPx: value.captureHeightPx,
-    });
-  }, [
-    vertices,
-    value.lat,
-    value.captureZoom,
-    value.captureWidthPx,
-    value.captureHeightPx,
-  ]);
+    if (vertices.length < 3) return 0;
+    return geoPolygonAreaM2(vertices);
+  }, [vertices]);
 
   // Sync computed surface back to the field whenever it changes.
   useEffect(() => {
@@ -70,22 +82,12 @@ export function PerimeterTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surfaceM2, vertices.length]);
 
-  function relativePos(
-    e: React.MouseEvent<HTMLDivElement>,
-  ): NormalizedPoint | null {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect || rect.width === 0 || rect.height === 0) return null;
-    return {
-      x: Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)),
-      y: Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)),
-    };
-  }
-
-  function addPoint(e: React.MouseEvent<HTMLDivElement>) {
-    const p = relativePos(e);
-    if (!p) return;
-    onChange({ perimeter: [...vertices, p] });
-  }
+  const handleMapClick = useCallback(
+    (p: GeoPoint) => {
+      onChange({ perimeter: [...vertices, p] });
+    },
+    [vertices, onChange],
+  );
 
   function undo() {
     onChange({ perimeter: vertices.slice(0, -1) });
@@ -95,16 +97,11 @@ export function PerimeterTab({
     onChange({ perimeter: [], surfaceM2: 0 });
   }
 
-  const pointsAttr = vertices.map((p) => `${p.x * 100},${p.y * 100}`).join(" ");
-
-  if (!captureDataUrl) {
+  if (value.lockedZoom == null || value.lat === 0) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center text-sm text-muted-foreground max-w-md">
-          <AlertTriangle
-            size={28}
-            className="mx-auto mb-3 text-destructive"
-          />
+          <AlertTriangle size={28} className="mx-auto mb-3 text-destructive" />
           {t("captureMissing")}
         </div>
       </div>
@@ -112,89 +109,55 @@ export function PerimeterTab({
   }
 
   const isComplete = vertices.length >= 3;
+  const center = { lat: value.lat, lng: value.lng };
 
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-[1fr_360px] overflow-hidden">
-      {/* MAP — fills the left area */}
-      <div className="relative bg-black/70 overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center p-6">
-          <div
-            ref={containerRef}
-            onClick={addPoint}
-            onMouseMove={(e) => setHoverPoint(relativePos(e))}
-            onMouseLeave={() => setHoverPoint(null)}
-            className="relative max-w-full max-h-full overflow-hidden rounded-lg border border-white/10 shadow-2xl cursor-crosshair"
-            style={{
-              aspectRatio: `${value.captureWidthPx ?? 1280} / ${value.captureHeightPx ?? 800}`,
-              width: "100%",
-              height: "auto",
-              maxHeight: "100%",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={captureDataUrl}
-              alt=""
-              className="block w-full h-full object-contain pointer-events-none select-none"
-              draggable={false}
-            />
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
+      {/* MAP — frozen satellite. We set the cursor via two layers:
+            - Google Maps own `draggableCursor` option (applied to the inner
+              .gm-style canvas overlay)
+            - A Tailwind arbitrary selector that forces it on every descendant
+              for the few cases where Google's default cursor leaks through. */}
+      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair [&_.gm-style_*]:!cursor-crosshair">
+        <Map
+          defaultCenter={center}
+          defaultZoom={value.lockedZoom}
+          mapTypeId="satellite"
+          gestureHandling="none"
+          disableDefaultUI={true}
+          mapTypeControl={false}
+          streetViewControl={false}
+          fullscreenControl={false}
+          zoomControl={false}
+          clickableIcons={false}
+          keyboardShortcuts={false}
+          draggableCursor="crosshair"
+          draggingCursor="crosshair"
+          mapId="lightbase-estimation"
+          className="h-full w-full"
+        >
+          <MapClickHandler onMapClick={handleMapClick} />
+          <MapPolygon
+            paths={vertices}
+            color={color}
+            preview={vertices.length < 3}
+          />
+          {vertices.map((p, i) => (
+            <AdvancedMarker
+              key={`${i}-${p.lat}-${p.lng}`}
+              position={{ lat: p.lat, lng: p.lng }}
             >
-              {vertices.length >= 2 ? (
-                <polyline
-                  points={pointsAttr}
-                  stroke={color}
-                  strokeWidth={0.4}
-                  fill="none"
-                  vectorEffect="non-scaling-stroke"
-                />
-              ) : null}
-              {vertices.length >= 3 ? (
-                <polygon
-                  points={pointsAttr}
-                  fill={color}
-                  fillOpacity={0.25}
-                  stroke={color}
-                  strokeWidth={0.4}
-                  vectorEffect="non-scaling-stroke"
-                />
-              ) : null}
-              {hoverPoint && vertices.length >= 1 ? (
-                <line
-                  x1={vertices.at(-1)!.x * 100}
-                  y1={vertices.at(-1)!.y * 100}
-                  x2={hoverPoint.x * 100}
-                  y2={hoverPoint.y * 100}
-                  stroke={color}
-                  strokeWidth={0.3}
-                  strokeDasharray="0.8 0.8"
-                  opacity={0.6}
-                  vectorEffect="non-scaling-stroke"
-                />
-              ) : null}
-              {vertices.map((p, i) => (
-                <circle
-                  key={i}
-                  cx={p.x * 100}
-                  cy={p.y * 100}
-                  r={0.8}
-                  fill={color}
-                  stroke="white"
-                  strokeWidth={0.25}
-                  vectorEffect="non-scaling-stroke"
-                />
-              ))}
-            </svg>
-          </div>
-        </div>
+              <span
+                className="block w-3 h-3 rounded-full ring-2 ring-white shadow"
+                style={{ background: color }}
+              />
+            </AdvancedMarker>
+          ))}
+        </Map>
       </div>
 
       {/* SIDEBAR — right column */}
       <aside className="border-l border-border bg-card/30 flex flex-col overflow-hidden">
-        {/* Step header */}
         <div className="p-6 border-b border-border space-y-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             {t("stepLabel")}
@@ -202,7 +165,6 @@ export function PerimeterTab({
           <h3 className="text-2xl font-semibold">{t("title")}</h3>
         </div>
 
-        {/* Instructions card */}
         <div className="p-6 space-y-5 overflow-y-auto flex-1">
           <div
             className="rounded-xl border p-4 space-y-2"
@@ -224,7 +186,6 @@ export function PerimeterTab({
             </div>
           </div>
 
-          {/* Stats — large, persistent */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-border p-4">
               <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
@@ -262,7 +223,6 @@ export function PerimeterTab({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="space-y-2 pt-2">
             <Button
               type="button"
@@ -289,7 +249,6 @@ export function PerimeterTab({
           </div>
         </div>
 
-        {/* Bottom hint */}
         {isComplete ? (
           <div className="p-4 border-t border-border bg-green-500/5">
             <p className="text-xs text-center text-green-600 font-medium">

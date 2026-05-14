@@ -66,7 +66,7 @@
   "TerrainEditor": {
     "newField": "Nouveau terrain",
     "tabs": {
-      "identity": "Identité",
+      "identity": "Emplacement",
       "identitySublabel": "Nom & emplacement",
       "perimeter": "Périmètre",
       "perimeterSublabel": "Tracer la zone",
@@ -75,6 +75,28 @@
       "configuration": "Configuration",
       "configurationSublabel": "Options du luminaire"
     },
+    "stepper": {
+      "name": "Nom",
+      "activity": "Activité",
+      "address": "Adresse",
+      "capture": "Capture",
+      "guide": "Complétez les 4 étapes ci-dessous, puis cliquez « Suivant » en haut à droite pour passer au tracé du périmètre.",
+      "guideSteps": [
+        "Saisissez l'adresse et sélectionnez le bon résultat dans les suggestions",
+        "Ajustez la position et le zoom sur la carte satellite",
+        "Cliquez sur « Confirmer la vue » pour figer le cadrage",
+        "Renseignez le nom du terrain, l'activité et la classe IES",
+        "Cliquez sur « Suivant » en haut à droite pour passer au tracé du périmètre"
+      ],
+      "editView": "Modifier la vue",
+      "reframe": "Recadrer",
+      "changeAddress": "Changer d'adresse",
+      "lockView": "Confirmer la vue",
+      "unlockView": "Modifier la vue",
+      "locked": "Vue confirmée",
+      "step1Of4": "Étape 1 sur 4",
+      "captureSuccess": "✓ Vue confirmée — cliquez « Suivant » pour continuer"
+    },
     "footer": {
       "cancel": "Annuler",
       "previous": "Précédent",
@@ -82,28 +104,23 @@
       "save": "Enregistrer"
     },
     "identity": {
-      "title": "Identité et emplacement",
+      "title": "Emplacement",
       "subtitle": "Donne un nom à ton terrain, choisis l'activité et capture la vue satellite.",
       "name": "Nom du terrain",
       "namePh": "Ex. Terrain de soccer principal",
       "activity": "Activité",
       "iesLevel": "Niveau / Classe IES",
       "address": "Adresse du terrain",
-      "addressPh": "Ex. 3819 Avenue Calixa-Lavallée, Montréal, QC",
-      "captureButton": "Capturer cette vue",
-      "recaptureButton": "Recapturer",
-      "capturing": "Capture…",
-      "captureSuccess": "Vue capturée.",
-      "captureFailed": "Échec de la capture",
-      "viewCaptured": "Vue capturée",
-      "captureHint": "Déplacez/zoomez et cliquez « Capturer cette vue »",
-      "captureCustom": "Position personnalisée",
-      "previewTitle": "Aperçu de la capture",
-      "previewAlt": "Capture satellite",
+      "addressPh": "Saisissez l'adresse du terrain…",
+      "captureSuccess": "Vue confirmée.",
+      "captureFailed": "Échec",
+      "captureHint": "Déplacez/zoomez et cliquez « Confirmer la vue »",
+      "previewAlt": "Vue satellite",
       "zoomLabel": "Zoom",
-      "confirmRecaptureTitle": "Refaire une capture ?",
-      "confirmRecaptureBody": "Si tu recaptures la vue, le tracé du périmètre et tous les fûts placés seront effacés (ils étaient liés à la capture précédente).",
-      "confirmRecaptureConfirm": "Oui, recapturer"
+      "lockSuccess": "Vue confirmée — vous pouvez tracer le périmètre.",
+      "confirmRecaptureTitle": "Modifier la vue ?",
+      "confirmRecaptureBody": "Si vous modifiez la vue, le tracé du périmètre et tous les fûts placés seront effacés.",
+      "confirmRecaptureConfirm": "Oui, modifier"
     },
     "perimeter": {
       "stepLabel": "Étape 2 sur 3",
@@ -225,7 +242,7 @@
       "title": "Adresse du parc",
       "subtitle": "Saisissez l'adresse civique du parc à équiper. La carte affiche la vue satellite pour validation visuelle.",
       "address": "Adresse civique",
-      "addressPh": "Ex. 3819 Avenue Calixa-Lavallée, Montréal, QC",
+      "addressPh": "Saisissez l'adresse du terrain…",
       "mapHint": "Astuce : sur Google Maps, clic-droit > Mesurer une distance pour estimer la surface d'un terrain.",
       "captureButton": "Capturer la vue",
       "recaptureButton": "Recapturer",

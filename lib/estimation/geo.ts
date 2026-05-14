@@ -1,86 +1,43 @@
-// Geographic math for converting on-screen pixel polygons (drawn over a Static
-// Maps capture) into real-world square meters.
-
 /**
- * Web Mercator ground resolution: meters per *displayed* pixel at the given
- * latitude and zoom level.
+ * Spherical earth math for polygons defined in lat/lng.
  *
- * Note: Static Maps with `scale=2` returns a PNG with 2x more pixels than the
- * logical viewport, but each "scale=1" pixel still represents this ground
- * resolution. So `metersPerPixel` applies to the logical (scale=1) pixel.
+ * We use these helpers in lieu of a satellite-image-pixel approach because the
+ * estimator now stores polygons in real geographic coordinates (drawn on top
+ * of a frozen Maps JS view). This is identical in spirit to
+ * `google.maps.geometry.spherical.computeArea` — kept here so server-side code
+ * (and tests) don't need the Maps JS runtime.
  */
-export function metersPerPixel(lat: number, zoom: number): number {
-  return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.pow(2, zoom);
+
+import type { GeoPoint } from "./schema";
+
+const EARTH_RADIUS_M = 6378137;
+
+function deg2rad(deg: number): number {
+  return (deg * Math.PI) / 180;
 }
 
 /**
- * Total ground width/height (in meters) covered by a Static Maps capture.
+ * Polygon area in square meters using the spherical-excess formula.
  *
- * @param widthPx Logical width passed to Static Maps (e.g. 1280).
- * @param heightPx Logical height passed to Static Maps (e.g. 800).
- * @param lat Center latitude.
- * @param zoom Zoom level used for the capture (e.g. 18).
- */
-export function captureGroundDimensions(
-  widthPx: number,
-  heightPx: number,
-  lat: number,
-  zoom: number,
-): { widthM: number; heightM: number } {
-  const mpp = metersPerPixel(lat, zoom);
-  return { widthM: widthPx * mpp, heightM: heightPx * mpp };
-}
-
-export interface NormalizedPoint {
-  x: number; // 0..1
-  y: number; // 0..1
-}
-
-/**
- * Compute the polygon area in m² using the Shoelace formula, after converting
- * normalized polygon vertices into real-world meters via the capture's ground
- * dimensions.
+ * Implementation matches Google Maps' computeArea so values are interchangeable
+ * with what the client renders. Vertices are in WGS84 (lat/lng); the polygon
+ * is closed implicitly (last vertex connects back to first).
  *
- * Assumes the polygon vertices are in [0,1] coordinates relative to the
- * displayed capture (x going right, y going down).
+ * Returns 0 for degenerate polygons (< 3 vertices).
  */
-export function polygonAreaM2(
-  vertices: ReadonlyArray<NormalizedPoint>,
-  groundWidthM: number,
-  groundHeightM: number,
+export function geoPolygonAreaM2(
+  vertices: ReadonlyArray<GeoPoint>,
 ): number {
-  if (vertices.length < 3) return 0;
-  let sum = 0;
-  for (let i = 0; i < vertices.length; i++) {
-    const a = vertices[i]!;
-    const b = vertices[(i + 1) % vertices.length]!;
-    const ax = a.x * groundWidthM;
-    const ay = a.y * groundHeightM;
-    const bx = b.x * groundWidthM;
-    const by = b.y * groundHeightM;
-    sum += ax * by - bx * ay;
+  const n = vertices.length;
+  if (n < 3) return 0;
+
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    const p1 = vertices[i]!;
+    const p2 = vertices[(i + 1) % n]!;
+    total +=
+      deg2rad(p2.lng - p1.lng) *
+      (2 + Math.sin(deg2rad(p1.lat)) + Math.sin(deg2rad(p2.lat)));
   }
-  return Math.abs(sum) / 2;
-}
-
-/**
- * Convenience helper: directly compute polygon area given a Static Maps
- * capture's lat / zoom / dimensions and the normalized polygon vertices.
- */
-export function polygonAreaForCapture(
-  vertices: ReadonlyArray<NormalizedPoint>,
-  options: {
-    lat: number;
-    zoom: number;
-    widthPx: number;
-    heightPx: number;
-  },
-): number {
-  const { widthM, heightM } = captureGroundDimensions(
-    options.widthPx,
-    options.heightPx,
-    options.lat,
-    options.zoom,
-  );
-  return polygonAreaM2(vertices, widthM, heightM);
+  return Math.abs((total * EARTH_RADIUS_M * EARTH_RADIUS_M) / 2);
 }
