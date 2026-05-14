@@ -331,7 +331,10 @@
         "Études géotechniques, structurelles, environnementales",
         "Taxes (TPS / TVQ — affichées séparément)"
       ],
-      "disclaimer": "Une étude photométrique précise est requise. Contactez-nous pour planifier une visite (afin de réaliser l'étude) et obtenir une estimation plus précise.\n\nNous pouvons également communiquer avec votre électricien local pour une orientation dans l'évaluation budgétaire.",
+      "notAQuoteTitle": "Estimation budgétaire, pas une soumission",
+      "notAQuoteLine1": "Une soumission officielle est émise uniquement à la suite d'une étude photométrique complète et d'un relevé sur le terrain.",
+      "notAQuoteLine2": "Une étude photométrique précise est requise. Contactez-nous pour planifier une visite (afin de réaliser l'étude) et obtenir une estimation plus précise.",
+      "notAQuoteLine3": "Nous pouvons également communiquer avec votre électricien local pour une orientation dans l'évaluation budgétaire.",
       "continueToContact": "Recevoir le bilan par courriel",
       "scenarioASubtitle": "Remplacement direct de l'existant en LED",
       "scenarioBSubtitle": "Selon la norme IES RP-6 pour l'activité",

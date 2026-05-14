@@ -1,6 +1,6 @@
 /**
  * Server-only helper that renders the estimation email via react-email and
- * sends it through Resend. Never import this from a client component — the
+ * sends it through Resend. Never import this from a client component; the
  * Resend API key must remain on the server.
  */
 import "server-only";
@@ -56,12 +56,25 @@ export interface SendEstimationEmailInput {
 }
 
 export interface SendEstimationEmailResult {
+  /** Resend message id of the email sent to the client. */
   id: string;
+  /** Resend message id of the internal lead notice (if RESEND_BCC_EMAIL set). */
+  internalId?: string;
 }
 
 /**
- * Render the report email and send it to the contact email on file.
- * Returns the Resend message id on success; throws on failure.
+ * Render and send the report:
+ *   1) A client-facing email at the contact address with a clean bilan.
+ *   2) An internal lead notice to RESEND_BCC_EMAIL (if configured) that
+ *      includes the contact info card and the quote-requested banner so
+ *      the Lightbase team can route it as a sales opportunity.
+ *
+ * The two are sent as separate messages instead of using `bcc`, so that
+ * the client never sees internal-only sections, and the team email can be
+ * filtered/forwarded independently.
+ *
+ * Throws if the client email fails. The internal email is best-effort: a
+ * failure there is logged but doesn't block the client receiving theirs.
  */
 export async function sendEstimationEmail(
   input: SendEstimationEmailInput,
@@ -69,49 +82,95 @@ export async function sendEstimationEmail(
   const { apiKey, from, siteUrl } = readEnv();
   const resend = new Resend(apiKey);
 
-  const element = EstimationReport({
+  const projectLabel = input.project.name || input.project.municipality;
+
+  // ─── 1) Client email ─────────────────────────────────────────────────
+  const clientElement = EstimationReport({
     project: input.project,
     estimate: input.estimate,
     locale: input.locale,
     hqOseEligible: input.hqOseEligible,
-    requestQuote: input.requestQuote,
+    // Client doesn't see the "quote requested" banner; they're the one
+    // who ticked it, no point reminding them.
+    requestQuote: false,
+    forInternalTeam: false,
     baseUrl: siteUrl,
   });
-
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
+  const [clientHtml, clientText] = await Promise.all([
+    render(clientElement),
+    render(clientElement, { plainText: true }),
   ]);
-
-  const projectLabel =
-    input.project.name || input.project.municipality;
-  const quoteTag = input.requestQuote
-    ? input.locale === "en"
-      ? "[Quote requested] "
-      : "[Devis demandé] "
-    : "";
-  const subject =
+  const clientSubject =
     input.locale === "en"
-      ? `${quoteTag}Lightpro OM estimation — ${projectLabel}`
-      : `${quoteTag}Estimation Lightpro OM — ${projectLabel}`;
+      ? `Lightpro OM estimation: ${projectLabel}`
+      : `Estimation Lightpro OM : ${projectLabel}`;
 
-  const { data, error } = await resend.emails.send({
+  const { data: clientData, error: clientError } = await resend.emails.send({
     from,
     to: [input.project.contactEmail],
-    subject,
-    html,
-    text,
-    // Optionally BCC the Lightbase sales inbox for visibility.
-    ...(process.env.RESEND_BCC_EMAIL
-      ? { bcc: [process.env.RESEND_BCC_EMAIL] }
-      : {}),
+    subject: clientSubject,
+    html: clientHtml,
+    text: clientText,
   });
+  if (clientError) {
+    throw new Error(
+      `Resend error (client): ${clientError.name}: ${clientError.message}`,
+    );
+  }
+  if (!clientData?.id) {
+    throw new Error("Resend returned no message id for client email");
+  }
 
-  if (error) {
-    throw new Error(`Resend error: ${error.name} — ${error.message}`);
+  // ─── 2) Internal lead notice (best-effort) ───────────────────────────
+  const teamAddress = process.env.RESEND_BCC_EMAIL;
+  let internalId: string | undefined;
+  if (teamAddress) {
+    try {
+      const internalElement = EstimationReport({
+        project: input.project,
+        estimate: input.estimate,
+        locale: input.locale,
+        hqOseEligible: input.hqOseEligible,
+        requestQuote: input.requestQuote,
+        forInternalTeam: true,
+        baseUrl: siteUrl,
+      });
+      const [internalHtml, internalText] = await Promise.all([
+        render(internalElement),
+        render(internalElement, { plainText: true }),
+      ]);
+      const quoteTag = input.requestQuote
+        ? input.locale === "en"
+          ? "[Quote requested] "
+          : "[Devis demandé] "
+        : "";
+      const leadTag =
+        input.locale === "en" ? "[Lead] " : "[Lead] ";
+      const internalSubject =
+        input.locale === "en"
+          ? `${quoteTag}${leadTag}${projectLabel} · ${input.project.contactName}`
+          : `${quoteTag}${leadTag}${projectLabel} · ${input.project.contactName}`;
+
+      const { data: teamData, error: teamError } = await resend.emails.send({
+        from,
+        to: [teamAddress],
+        subject: internalSubject,
+        html: internalHtml,
+        text: internalText,
+        // Set reply-to to the client so the team can reach them directly.
+        replyTo: input.project.contactEmail,
+      });
+      if (teamError) {
+        console.error(
+          `[email] internal notice failed: ${teamError.name}: ${teamError.message}`,
+        );
+      } else {
+        internalId = teamData?.id;
+      }
+    } catch (err) {
+      console.error("[email] internal notice threw", err);
+    }
   }
-  if (!data?.id) {
-    throw new Error("Resend returned no message id");
-  }
-  return { id: data.id };
+
+  return { id: clientData.id, internalId };
 }
