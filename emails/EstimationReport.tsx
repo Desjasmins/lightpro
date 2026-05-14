@@ -33,8 +33,14 @@ export interface EstimationReportProps {
   estimate: ProjectEstimate;
   locale: "fr" | "en";
   hqOseEligible: boolean;
-  /** User ticked the "request detailed quote" box — surfaces a sales tag. */
+  /** User ticked the "request detailed quote" box (surfaces a sales tag). */
   requestQuote?: boolean;
+  /**
+   * When `true`, render the Lightbase sales-team view: prominent contact
+   * card at the top, quote-request banner, etc. When `false` (the user-
+   * facing version), those internal sections are hidden.
+   */
+  forInternalTeam?: boolean;
   /** Public base URL for the logo (e.g. https://lightpro.lightbase.ca). */
   baseUrl?: string;
 }
@@ -42,8 +48,8 @@ export interface EstimationReportProps {
 const T = (locale: "fr" | "en") => ({
   preview:
     locale === "en"
-      ? "Your Lightpro OM estimation — two scenarios"
-      : "Votre estimation Lightpro OM — deux scénarios",
+      ? "Your Lightpro OM estimation: two scenarios"
+      : "Votre estimation Lightpro OM : deux scénarios",
   reportTitle:
     locale === "en" ? "Estimation report" : "Rapport d'estimation",
   hello: locale === "en" ? "Hello" : "Bonjour",
@@ -53,16 +59,16 @@ const T = (locale: "fr" | "en") => ({
       : "Voici l'estimation budgétaire pour votre projet d'éclairage sportif. Deux scénarios sont présentés : un remplacement 1 pour 1 en LED et une configuration conforme à la norme IES RP-6.",
   scenarioA:
     locale === "en"
-      ? "Scenario A — 1-for-1 replacement"
-      : "Scénario A — Remplacement 1 pour 1",
+      ? "Scenario A: 1-for-1 replacement"
+      : "Scénario A : Remplacement 1 pour 1",
   scenarioASubtitle:
     locale === "en"
       ? "Direct LED replacement of existing fixtures"
       : "Remplacement direct de l'existant en LED",
   scenarioB:
     locale === "en"
-      ? "Scenario B — IES RP-6 standard"
-      : "Scénario B — Conformité IES RP-6",
+      ? "Scenario B: IES RP-6 standard"
+      : "Scénario B : Conformité IES RP-6",
   scenarioBSubtitle:
     locale === "en"
       ? "Per IES RP-6 standard for the activity"
@@ -83,8 +89,8 @@ const T = (locale: "fr" | "en") => ({
   nogoLabel: locale === "en" ? "Study required" : "Étude requise",
   noStandard:
     locale === "en"
-      ? "No standard available — 1:1 photometric study required."
-      : "Norme non disponible — photométrie 1:1 requise.",
+      ? "No standard available. A custom 1:1 photometric study is required."
+      : "Norme non disponible. Une photométrie 1:1 personnalisée est requise.",
   subtotal: locale === "en" ? "Subtotal" : "Sous-total",
   breakdownLuminaires: locale === "en" ? "LP luminaires" : "Luminaires LP",
   breakdownVisors: locale === "en" ? "Visors" : "Visières",
@@ -96,8 +102,8 @@ const T = (locale: "fr" | "en") => ({
   breakdownInstallation: locale === "en" ? "Installation" : "Installation",
   hqOseNote:
     locale === "en"
-      ? "Eligible for the HQ-OSE 5.1 subsidy program — applicable rebate to be confirmed."
-      : "Admissible au programme HQ-OSE 5.1 — montant de subvention à confirmer.",
+      ? "Eligible for the HQ-OSE 5.1 subsidy program. Applicable rebate to be confirmed."
+      : "Admissible au programme HQ-OSE 5.1. Montant de subvention à confirmer.",
   quoteRequestedTitle:
     locale === "en" ? "Detailed quote requested" : "Estimation détaillée demandée",
   quoteRequestedBody:
@@ -105,6 +111,12 @@ const T = (locale: "fr" | "en") => ({
       ? "The user asked the Lightbase team to follow up with a priced commercial offer and a site visit."
       : "L'utilisateur souhaite être contacté par l'équipe Lightbase pour une offre commerciale chiffrée et une visite technique.",
   addressLabel: locale === "en" ? "Address" : "Adresse",
+  contactSectionTitle:
+    locale === "en" ? "Lead contact info" : "Coordonnées du contact",
+  contactProject: locale === "en" ? "Project" : "Projet",
+  contactMunicipality: locale === "en" ? "Municipality" : "Municipalité",
+  contactName: locale === "en" ? "Contact" : "Contact",
+  contactEmail: locale === "en" ? "Email" : "Courriel",
   disclaimerLine1:
     locale === "en"
       ? "A detailed photometric study is required. Contact us to schedule a site visit (to perform the study) and receive a more accurate estimate."
@@ -115,8 +127,8 @@ const T = (locale: "fr" | "en") => ({
       : "Nous pouvons également communiquer avec votre électricien local pour une orientation dans l'évaluation budgétaire.",
   footer:
     locale === "en"
-      ? "Lightbase — Montréal, Québec, Canada"
-      : "Lightbase — Montréal, Québec, Canada",
+      ? "Lightbase · Montréal, Québec, Canada"
+      : "Lightbase · Montréal, Québec, Canada",
   rights:
     locale === "en"
       ? "Lightpro OM is a registered trademark of Lightbase."
@@ -143,6 +155,7 @@ export function EstimationReport({
   locale,
   hqOseEligible,
   requestQuote = false,
+  forInternalTeam = false,
   baseUrl = "https://lightpro.lightbase.ca",
 }: EstimationReportProps) {
   const t = T(locale);
@@ -218,7 +231,7 @@ export function EstimationReport({
               {t.reportTitle}
             </Heading>
             <Text style={{ color: brand.fog, margin: `${spacing.xs} 0 0` }}>
-              {t.hello} {project.contactName} — {project.municipality}
+              {t.hello} {project.contactName}, {project.municipality}
             </Text>
             <Text
               style={{
@@ -231,8 +244,53 @@ export function EstimationReport({
             </Text>
           </Section>
 
-          {/* ─── Quote-requested banner — sales lead flag for BCC inbox ─── */}
-          {requestQuote ? (
+          {/* ─── Internal contact info card (Lightbase team only) ─── */}
+          {forInternalTeam ? (
+            <Section
+              style={{
+                marginTop: spacing.lg,
+                backgroundColor: brand.ink2,
+                border: `1px solid ${brand.ink3}`,
+                borderRadius: radii.md,
+                padding: spacing.md,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: brand.fog,
+                  fontSize: "10px",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                }}
+              >
+                {t.contactSectionTitle}
+              </Text>
+              <Row style={{ marginTop: spacing.sm }}>
+                <Column style={{ width: "50%", verticalAlign: "top", paddingRight: 8 }}>
+                  <ContactRow label={t.contactProject} value={project.name} />
+                  <ContactRow
+                    label={t.contactMunicipality}
+                    value={project.municipality}
+                  />
+                </Column>
+                <Column style={{ width: "50%", verticalAlign: "top", paddingLeft: 8 }}>
+                  <ContactRow label={t.contactName} value={project.contactName} />
+                  <ContactRow
+                    label={t.contactEmail}
+                    value={project.contactEmail}
+                    href={`mailto:${project.contactEmail}`}
+                  />
+                </Column>
+              </Row>
+            </Section>
+          ) : null}
+
+          {/* Quote-requested banner: only shown to the Lightbase inbox, so
+              the client doesn't get a "sales lead" notice in their own
+              report. */}
+          {forInternalTeam && requestQuote ? (
             <Section
               style={{
                 marginTop: spacing.lg,
@@ -288,7 +346,7 @@ export function EstimationReport({
               <Column style={{ width: "33%", verticalAlign: "top" }}>
                 <TotalBlock
                   label={t.scenarioB}
-                  value={hasB ? fmtCad(totalB, locale) : "—"}
+                  value={hasB ? fmtCad(totalB, locale) : "N/A"}
                   hint={hasB ? t.scenarioBSubtitle : t.noStandard}
                   accent={hasB}
                 />
@@ -299,7 +357,7 @@ export function EstimationReport({
                   value={
                     hasB
                       ? `${delta >= 0 ? "+" : "−"} ${fmtCad(Math.abs(delta), locale)}`
-                      : "—"
+                      : "N/A"
                   }
                   hint=""
                   accent={false}
@@ -797,6 +855,52 @@ function StatMini({
           {sub}
         </Text>
       ) : null}
+    </>
+  );
+}
+
+function ContactRow({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+}) {
+  if (!value) return null;
+  return (
+    <>
+      <Text
+        style={{
+          margin: 0,
+          color: brand.fog,
+          fontSize: "10px",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        style={{
+          margin: "2px 0 8px",
+          color: brand.white,
+          fontSize: "13px",
+          fontWeight: 500,
+        }}
+      >
+        {href ? (
+          <Link
+            href={href}
+            style={{ color: brand.glow, textDecoration: "none" }}
+          >
+            {value}
+          </Link>
+        ) : (
+          value
+        )}
+      </Text>
     </>
   );
 }
