@@ -142,6 +142,12 @@ export function PerimeterTab({
         <Map
           defaultCenter={center}
           defaultZoom={value.lockedZoom}
+          // Force a flat, north-up camera. Some Maps JS builds expose a
+          // tilt/3D control that bypasses `disableDefaultUI`; passing these
+          // in controlled mode (`tilt`/`heading`) ignores any user input.
+          tilt={0}
+          heading={0}
+          rotateControl={false}
           mapTypeId="satellite"
           gestureHandling="none"
           disableDefaultUI={true}

@@ -38,6 +38,7 @@ interface StepProps {
 
 const contactFormSchema = projectStepSchema.extend({
   consent: z.literal(true, { error: "Required" }),
+  requestQuote: z.boolean(),
 });
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
@@ -84,6 +85,7 @@ export function Step4Contact({
       contactName: draft.project?.contactName ?? "",
       contactEmail: draft.project?.contactEmail ?? "",
       consent: false as unknown as true,
+      requestQuote: false,
     },
   });
 
@@ -102,6 +104,7 @@ export function Step4Contact({
           project,
           fields: draft.fields,
           hqOseEligible: draft.hqOseEligible,
+          requestQuote: values.requestQuote,
           locale: locale === "en" ? "en" : "fr",
         },
         locale === "en" ? "en" : "fr",
@@ -264,6 +267,29 @@ export function Step4Contact({
                     {tStep("consent")}
                   </Label>
                   <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="requestQuote"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start gap-3 space-y-0 rounded-lg border border-border p-4">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value === true}
+                    onCheckedChange={(v) => field.onChange(v === true)}
+                  />
+                </FormControl>
+                <div className="space-y-1">
+                  <Label className="cursor-pointer leading-relaxed">
+                    {tStep("requestQuote")}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {tStep("requestQuoteHint")}
+                  </p>
                 </div>
               </FormItem>
             )}

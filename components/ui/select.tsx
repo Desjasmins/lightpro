@@ -24,10 +24,24 @@ interface SelectValueProps
   children?: SelectPrimitive.Value.Props["children"]
 }
 
-function SelectValue({ className, labels, children, ...props }: SelectValueProps) {
+function SelectValue({
+  className,
+  labels,
+  children,
+  placeholder,
+  ...props
+}: SelectValueProps) {
+  // When `labels` are provided we render the human-readable label inline
+  // (instead of letting Radix echo the raw enum value). The tradeoff is we
+  // also have to render the `placeholder` ourselves when there's no value —
+  // Radix only renders its placeholder when no `children` function is set.
   const renderChild = labels
     ? (value: unknown): React.ReactNode => {
-        if (value == null || value === "") return null
+        if (value == null || value === "") {
+          return placeholder ? (
+            <span className="text-muted-foreground">{placeholder}</span>
+          ) : null
+        }
         const key = String(value)
         return labels[key] ?? key
       }
@@ -37,6 +51,7 @@ function SelectValue({ className, labels, children, ...props }: SelectValueProps
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
+      placeholder={placeholder}
       {...props}
     >
       {renderChild}

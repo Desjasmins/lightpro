@@ -55,7 +55,6 @@ export function Step1Address({
 
   function openForCreate() {
     const seed = emptyField();
-    seed.name = `Terrain ${draft.fields.length + 1}`;
     setEditorField(seed);
     setEditorColor(colorForIndex(draft.fields.length));
     setEditorOpen(true);
@@ -93,7 +92,9 @@ export function Step1Address({
       f.surfaceM2 > 0 &&
       f.poles.length >= 1 &&
       Boolean(f.config) &&
-      f.lockedZoom != null
+      f.lockedZoom != null &&
+      Boolean(f.sportType) &&
+      Boolean(f.iesClass)
     );
   }
   const incompleteFields = draft.fields.filter((f) => !isFieldComplete(f));

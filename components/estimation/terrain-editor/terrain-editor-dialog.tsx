@@ -110,7 +110,9 @@ export function TerrainEditorDialog({
     field.address.trim().length >= 5 &&
     field.lat !== 0 &&
     field.lng !== 0 &&
-    field.lockedZoom != null;
+    field.lockedZoom != null &&
+    Boolean(field.sportType) &&
+    Boolean(field.iesClass);
   const isPerimeterValid =
     (field.perimeter?.length ?? 0) >= 3 && field.surfaceM2 > 0;
   const isPolesValid = field.poles.length >= 1;
@@ -294,12 +296,22 @@ export function TerrainEditorDialog({
   );
 }
 
+/**
+ * Returns a blank field. Sport / IES are intentionally left unset so the
+ * Selects show their placeholders rather than a pre-picked default — the
+ * caller MUST validate that they were chosen before saving.
+ *
+ * We assert through the missing enums so the rest of the codebase keeps a
+ * strict `FieldValues` type; validation gates (`isIdentityValid`,
+ * `isFieldComplete`) ensure these are populated before downstream code
+ * (estimate, standards lookup) is reached.
+ */
 export function emptyField(): FieldValues {
   return {
     id: `f_${Math.random().toString(36).slice(2, 10)}`,
     name: "",
-    sportType: "SOCCER",
-    iesClass: "CLASS_IV",
+    sportType: undefined as unknown as FieldValues["sportType"],
+    iesClass: undefined as unknown as FieldValues["iesClass"],
     address: "",
     lat: 0,
     lng: 0,

@@ -215,7 +215,10 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue labels={sportLabels} />
+                  <SelectValue
+                    labels={sportLabels}
+                    placeholder={t("activityPh")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {sportTypes.map((s) => (
@@ -236,7 +239,10 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue labels={iesLabels} />
+                  <SelectValue
+                    labels={iesLabels}
+                    placeholder={t("iesLevelPh")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {iesClasses.map((c) => (
@@ -296,6 +302,12 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
             defaultZoom={initialZoom}
             onCameraChanged={handleCameraChange}
             mapTypeId="satellite"
+            // Force flat camera. Forces tilt/heading to 0 even if the user
+            // hits the 3D/tilt control (which can bypass disableDefaultUI on
+            // some Maps JS builds).
+            tilt={0}
+            heading={0}
+            rotateControl={false}
             gestureHandling={isLocked ? "none" : "greedy"}
             disableDefaultUI={isLocked}
             mapTypeControl={false}

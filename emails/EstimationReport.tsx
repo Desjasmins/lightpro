@@ -33,6 +33,8 @@ export interface EstimationReportProps {
   estimate: ProjectEstimate;
   locale: "fr" | "en";
   hqOseEligible: boolean;
+  /** User ticked the "request detailed quote" box — surfaces a sales tag. */
+  requestQuote?: boolean;
   /** Public base URL for the logo (e.g. https://lightpro.lightbase.ca). */
   baseUrl?: string;
 }
@@ -96,6 +98,13 @@ const T = (locale: "fr" | "en") => ({
     locale === "en"
       ? "Eligible for the HQ-OSE 5.1 subsidy program — applicable rebate to be confirmed."
       : "Admissible au programme HQ-OSE 5.1 — montant de subvention à confirmer.",
+  quoteRequestedTitle:
+    locale === "en" ? "Detailed quote requested" : "Estimation détaillée demandée",
+  quoteRequestedBody:
+    locale === "en"
+      ? "The user asked the Lightbase team to follow up with a priced commercial offer and a site visit."
+      : "L'utilisateur souhaite être contacté par l'équipe Lightbase pour une offre commerciale chiffrée et une visite technique.",
+  addressLabel: locale === "en" ? "Address" : "Adresse",
   disclaimerLine1:
     locale === "en"
       ? "A detailed photometric study is required. Contact us to schedule a site visit (to perform the study) and receive a more accurate estimate."
@@ -133,6 +142,7 @@ export function EstimationReport({
   estimate,
   locale,
   hqOseEligible,
+  requestQuote = false,
   baseUrl = "https://lightpro.lightbase.ca",
 }: EstimationReportProps) {
   const t = T(locale);
@@ -220,6 +230,41 @@ export function EstimationReport({
               {t.intro}
             </Text>
           </Section>
+
+          {/* ─── Quote-requested banner — sales lead flag for BCC inbox ─── */}
+          {requestQuote ? (
+            <Section
+              style={{
+                marginTop: spacing.lg,
+                backgroundColor: brand.glowDeep,
+                borderRadius: radii.md,
+                padding: spacing.md,
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  color: brand.white,
+                  fontSize: "12px",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                }}
+              >
+                ★ {t.quoteRequestedTitle}
+              </Text>
+              <Text
+                style={{
+                  margin: `${spacing.xs} 0 0`,
+                  color: brand.white,
+                  fontSize: "13px",
+                  lineHeight: "1.5",
+                }}
+              >
+                {t.quoteRequestedBody}
+              </Text>
+            </Section>
+          ) : null}
 
           {/* ─── Totals card ─── */}
           <Section
@@ -445,6 +490,18 @@ function FieldBlock({
           >
             {field.fieldName}
           </Heading>
+          {field.address ? (
+            <Text
+              style={{
+                margin: `${spacing.xs} 0 0`,
+                color: brand.cloud,
+                fontSize: "12px",
+                lineHeight: "1.4",
+              }}
+            >
+              {t.addressLabel}: {field.address}
+            </Text>
+          ) : null}
           <Text
             style={{
               margin: `${spacing.xs} 0 0`,
@@ -513,7 +570,6 @@ function FieldBlock({
               locale={locale}
               t={t}
               accent
-              reference={field.standard.referenceLabel}
             />
           ) : (
             <div
@@ -548,7 +604,6 @@ function ScenarioMini({
   locale,
   t,
   accent,
-  reference,
 }: {
   title: string;
   subtitle: string;
@@ -561,7 +616,6 @@ function ScenarioMini({
   locale: "fr" | "en";
   t: ReturnType<typeof T>;
   accent: boolean;
-  reference?: string;
 }) {
   const rows: { label: string; value: number }[] = [
     { label: t.breakdownLuminaires, value: breakdown.luminairesCost },
@@ -634,18 +688,6 @@ function ScenarioMini({
           />
         </Column>
       </Row>
-
-      {reference ? (
-        <Text
-          style={{
-            margin: `${spacing.sm} 0 0`,
-            color: brand.fog,
-            fontSize: "11px",
-          }}
-        >
-          {t.reference}: {reference}
-        </Text>
-      ) : null}
 
       <Hr style={{ borderColor: brand.ink3, margin: `${spacing.md} 0` }} />
 

@@ -162,6 +162,11 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
         <Map
           defaultCenter={center}
           defaultZoom={value.lockedZoom}
+          // Force flat camera — same reason as Perimeter tab: prevents the
+          // built-in tilt/3D control from breaking the click→latlng math.
+          tilt={0}
+          heading={0}
+          rotateControl={false}
           mapTypeId="satellite"
           gestureHandling="none"
           disableDefaultUI={true}

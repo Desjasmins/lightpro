@@ -38,7 +38,9 @@ export function Sectors() {
                   sizes="(min-width: 768px) 25vw, 50vw"
                   className="object-cover transition duration-700 group-hover:scale-[1.04]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                {/* Subtle gradient just under the label for readability —
+                    keeps the image largely unobscured. */}
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-4">
                   <h3 className="text-white text-sm font-medium tracking-tight">
                     {t(s.key)}
