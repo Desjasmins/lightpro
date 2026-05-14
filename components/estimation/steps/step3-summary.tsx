@@ -359,12 +359,6 @@ function FieldComparisonCard({
               highlight
               extraInfo={
                 <>
-                  <p className="text-xs text-muted-foreground">
-                    {tStep("referenceLabel")} :{" "}
-                    <span className="font-medium text-foreground">
-                      {field.standard.referenceLabel}
-                    </span>
-                  </p>
                   {field.standard.goNoGoReasons.length > 0 ? (
                     <ul className="text-xs space-y-0.5 mt-2">
                       {field.standard.goNoGoReasons.map((r) => (

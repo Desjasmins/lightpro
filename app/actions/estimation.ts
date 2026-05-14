@@ -19,6 +19,12 @@ const submitSchema = z.object({
   project: projectStepSchema,
   fields: z.array(fieldSchema).min(1, "At least one field is required"),
   hqOseEligible: z.boolean(),
+  /**
+   * User explicitly asked the Lightbase team to follow up with a detailed,
+   * priced estimate (vs. the auto-generated indicative bilan). When `true`
+   * the email/BCC flow can tag it as a sales lead.
+   */
+  requestQuote: z.boolean().default(false),
   locale: z.enum(["fr", "en"]).default("fr"),
 });
 
@@ -61,7 +67,7 @@ export async function submitEstimation(
     };
   }
 
-  const { project, fields, hqOseEligible, locale } = parsed.data;
+  const { project, fields, hqOseEligible, requestQuote, locale } = parsed.data;
   const projectInput: ProjectStepValues = project;
   const fieldsInput: FieldValues[] = fields;
 
@@ -73,6 +79,7 @@ export async function submitEstimation(
       estimate,
       locale,
       hqOseEligible,
+      requestQuote,
     });
     return { ok: true, emailId: id };
   } catch (error: unknown) {

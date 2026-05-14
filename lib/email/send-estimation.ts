@@ -47,6 +47,12 @@ export interface SendEstimationEmailInput {
   estimate: ProjectEstimate;
   locale: "fr" | "en";
   hqOseEligible: boolean;
+  /**
+   * The user ticked the "request a real quote from Lightbase" checkbox.
+   * When `true`, the subject line is flagged and the BCC inbox can route it
+   * as a sales lead instead of a passive notification.
+   */
+  requestQuote?: boolean;
 }
 
 export interface SendEstimationEmailResult {
@@ -68,6 +74,7 @@ export async function sendEstimationEmail(
     estimate: input.estimate,
     locale: input.locale,
     hqOseEligible: input.hqOseEligible,
+    requestQuote: input.requestQuote,
     baseUrl: siteUrl,
   });
 
@@ -76,10 +83,17 @@ export async function sendEstimationEmail(
     render(element, { plainText: true }),
   ]);
 
+  const projectLabel =
+    input.project.name || input.project.municipality;
+  const quoteTag = input.requestQuote
+    ? input.locale === "en"
+      ? "[Quote requested] "
+      : "[Devis demandé] "
+    : "";
   const subject =
     input.locale === "en"
-      ? `Lightpro OM estimation — ${input.project.name || input.project.municipality}`
-      : `Estimation Lightpro OM — ${input.project.name || input.project.municipality}`;
+      ? `${quoteTag}Lightpro OM estimation — ${projectLabel}`
+      : `${quoteTag}Estimation Lightpro OM — ${projectLabel}`;
 
   const { data, error } = await resend.emails.send({
     from,

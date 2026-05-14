@@ -3,18 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import type { ProjectStepValues, FieldValues } from "./schema";
 
-const STORAGE_KEY = "lightbase-estimation-draft-v2";
-
-/**
- * In-session capture metadata. The dataURL is large (~500KB base64); keep all
- * captures in sessionStorage but expect a hard limit at ~5MB total.
- */
-export interface FieldCapture {
-  dataUrl: string;
-  /** Final PNG dimensions (after scale=2 retina doubling). */
-  width: number;
-  height: number;
-}
+// v3 — broke compat with v2 (removed captures dataUrl, switched polygon and
+// pole positions from normalized pixel coords to real-world lat/lng).
+const STORAGE_KEY = "lightbase-estimation-draft-v3";
 
 export type FieldDraft = FieldValues;
 
@@ -22,17 +13,13 @@ export interface EstimationDraft {
   step: number;
   project?: ProjectStepValues;
   fields: FieldDraft[];
-  /** Map from fieldId → capture dataURL + dimensions. Session-only. */
-  captures: Record<string, FieldCapture>;
   hqOseEligible: boolean;
 }
 
 const emptyDraft: EstimationDraft = {
   step: 1,
   fields: [],
-  captures: {},
-  // By default we assume the organisation qualifies for the HQ-OSE subsidy
-  // (municipal / institutional clients almost always do). The user can opt out.
+  // Most municipal/institutional clients qualify for HQ-OSE — opt-out by user.
   hqOseEligible: true,
 };
 
@@ -85,29 +72,21 @@ export function useEstimationDraft() {
     }
   }, []);
 
-  const upsertField = useCallback(
-    (field: FieldDraft, capture?: FieldCapture) => {
-      setDraft((d) => {
-        const existing = d.fields.findIndex((f) => f.id === field.id);
-        const fields =
-          existing === -1
-            ? [...d.fields, field]
-            : d.fields.map((f, i) => (i === existing ? field : f));
-        const captures = capture
-          ? { ...d.captures, [field.id]: capture }
-          : d.captures;
-        return { ...d, fields, captures };
-      });
-    },
-    [],
-  );
+  const upsertField = useCallback((field: FieldDraft) => {
+    setDraft((d) => {
+      const existing = d.fields.findIndex((f) => f.id === field.id);
+      const fields =
+        existing === -1
+          ? [...d.fields, field]
+          : d.fields.map((f, i) => (i === existing ? field : f));
+      return { ...d, fields };
+    });
+  }, []);
 
   const removeField = useCallback((fieldId: string) => {
     setDraft((d) => {
       const fields = d.fields.filter((f) => f.id !== fieldId);
-      const { [fieldId]: _drop, ...captures } = d.captures;
-      void _drop;
-      return { ...d, fields, captures };
+      return { ...d, fields };
     });
   }, []);
 

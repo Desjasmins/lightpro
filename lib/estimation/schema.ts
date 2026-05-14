@@ -89,11 +89,16 @@ export const projectStepSchema = z.object({
 });
 export type ProjectStepValues = z.infer<typeof projectStepSchema>;
 
-export const polygonPointSchema = z.object({
-  x: z.number().min(0).max(1),
-  y: z.number().min(0).max(1),
+/**
+ * A point on the earth surface (WGS84). Used for both polygon vertices and
+ * pole positions, since we store everything in real geographic coords (no
+ * more pixel-relative coords tied to a satellite image).
+ */
+export const geoPointSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
 });
-export type PolygonPoint = z.infer<typeof polygonPointSchema>;
+export type GeoPoint = z.infer<typeof geoPointSchema>;
 
 export const poleSchema = z.object({
   id: z.string().optional(),
@@ -105,8 +110,9 @@ export const poleSchema = z.object({
   nbExistingFixtures: z.coerce.number().int().min(0).max(99),
   existingPowerW: z.coerce.number().int().min(0).max(5000),
   voltage: z.enum(voltages),
-  positionX: z.coerce.number().min(0).max(1).optional(),
-  positionY: z.coerce.number().min(0).max(1).optional(),
+  /** Real-world position; optional during draft (until user places it). */
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
 });
 export type PoleValues = z.infer<typeof poleSchema>;
 
@@ -140,8 +146,13 @@ export const fieldConfigSchema = z.object({
 export type FieldConfigValues = z.infer<typeof fieldConfigSchema>;
 
 /**
- * A full self-contained Field — has its own address, capture, perimeter, poles,
- * and per-field product configuration.
+ * A full self-contained Field — has its own address, frozen view, perimeter,
+ * poles, and per-field product configuration.
+ *
+ * Note: there is no satellite "capture" image. The user freezes a Maps JS view
+ * (lat/lng/lockedZoom) and all subsequent overlays (polygon, poles) are drawn
+ * directly on top of that live-but-frozen map. Polygon vertices and pole
+ * positions are stored in real lat/lng coordinates.
  */
 export const fieldSchema = z.object({
   id: z.string(),
@@ -149,18 +160,24 @@ export const fieldSchema = z.object({
   name: z.string().min(2, "Required").max(120),
   sportType: z.enum(sportTypes),
   iesClass: z.enum(iesClasses),
-  // Geographic
+  // Geographic — terrain center (selected via address/place)
   address: z.string().min(5, "Required").max(240),
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
   placeId: z.string().optional(),
-  // Capture metadata (session-only screenshotDataUrl is in the store, not in the schema)
-  captureZoom: z.number().int().min(1).max(20).optional(),
-  captureWidthPx: z.number().int().min(64).max(2048).optional(),
-  captureHeightPx: z.number().int().min(64).max(2048).optional(),
-  // Perimeter (polygon vertices in normalized 0..1 coords)
-  perimeter: z.array(polygonPointSchema).optional(),
-  surfaceM2: z.coerce.number().positive("Must be positive").max(500000),
+  /**
+   * Map zoom level the user "froze" the view at. Once set, the perimeter and
+   * poles tabs render a non-interactive Maps JS view at this zoom + the
+   * field's lat/lng. Unset until the user clicks "Confirmer la vue".
+   *
+   * Stored as a float (Google Maps allows fractional zoom). Previously we
+   * `Math.round`-ed this value, which caused the reloaded framing to differ
+   * from what the user originally saw, sometimes clipping the polygon.
+   */
+  lockedZoom: z.number().min(1).max(21).optional(),
+  // Perimeter — polygon vertices in real-world lat/lng
+  perimeter: z.array(geoPointSchema).optional(),
+  surfaceM2: z.coerce.number().nonnegative("Must be ≥ 0").max(500000),
   // Poles
   poles: z.array(poleSchema),
   // Per-field configuration (optional during draft, required to reach summary)

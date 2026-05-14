@@ -56,6 +56,8 @@ export interface CostBreakdown {
 export interface FieldEstimate {
   fieldId: string;
   fieldName: string;
+  /** Street address the user picked; surfaced in the email report. */
+  address: string;
   sport: string;
   iesClass: IesClass;
   surfaceM2: number;
@@ -281,6 +283,7 @@ export function estimateField(field: FieldValues): FieldEstimate {
   return {
     fieldId: field.id,
     fieldName: field.name,
+    address: field.address,
     sport: field.sportType,
     iesClass: field.iesClass,
     surfaceM2: field.surfaceM2,

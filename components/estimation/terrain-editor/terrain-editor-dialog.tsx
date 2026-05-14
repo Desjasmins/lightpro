@@ -4,12 +4,8 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type {
-  FieldValues,
-  PolygonPoint,
-} from "@/lib/estimation/schema";
+import type { FieldValues, GeoPoint } from "@/lib/estimation/schema";
 import { defaultFieldConfig } from "@/lib/estimation/config-derive";
-import type { FieldCapture } from "@/lib/estimation/store";
 import { IdentityTab } from "./identity-tab";
 import { PerimeterTab } from "./perimeter-tab";
 import { PolesTab } from "./poles-tab";
@@ -30,15 +26,14 @@ export type EditorTab = "identity" | "perimeter" | "poles" | "configuration";
 interface TerrainEditorDialogProps {
   open: boolean;
   onClose: () => void;
-  onSave: (field: FieldValues, capture?: FieldCapture) => void;
+  onSave: (field: FieldValues) => void;
   /**
-   * Called whenever a NEW capture is taken inside the dialog, so the parent
-   * can update the draft immediately (e.g. so the terrain card reflects the
-   * new image even before the user clicks the final "Suivant" / save).
+   * Called when the in-dialog field changes (e.g. user freezes the view in
+   * the Identity tab) so the parent draft can reflect the change immediately
+   * even before the final save.
    */
-  onCaptureCommit?: (field: FieldValues, capture: FieldCapture) => void;
+  onChangeCommit?: (field: FieldValues) => void;
   initial: FieldValues;
-  capture?: FieldCapture;
   /** Color used for polygon + markers (per-terrain). */
   color: string;
 }
@@ -54,25 +49,18 @@ export function TerrainEditorDialog({
   open,
   onClose,
   onSave,
-  onCaptureCommit,
+  onChangeCommit,
   initial,
-  capture,
   color,
 }: TerrainEditorDialogProps) {
   const t = useTranslations("TerrainEditor");
   const [tab, setTab] = useState<EditorTab>("identity");
   const [field, setField] = useState<FieldValues>(initial);
-  const [localCapture, setLocalCapture] = useState<FieldCapture | undefined>(
-    capture,
-  );
 
-  // Reset state ONLY when the dialog transitions to open. Re-running this on
-  // every `initial`/`capture` prop change would wipe local edits (e.g. when the
-  // parent commits a capture via onCaptureCommit and pushes a new prop in).
+  // Reset state ONLY when the dialog transitions to open.
   useEffect(() => {
     if (open) {
       setField(initial);
-      setLocalCapture(capture);
       setTab("identity");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,29 +96,13 @@ export function TerrainEditorDialog({
   if (!open) return null;
 
   function patch(p: Partial<FieldValues>) {
-    setField((f) => ({ ...f, ...p }));
-  }
-
-  function handleCapture(
-    seedPatch: Partial<FieldValues>,
-    newCapture: FieldCapture,
-  ) {
-    // A new capture invalidates any previously drawn polygon or placed poles,
-    // since their positions were normalized to the previous capture image.
     setField((f) => {
-      const next: FieldValues = {
-        ...f,
-        ...seedPatch,
-        perimeter: [],
-        surfaceM2: 0,
-        poles: [],
-      };
-      // Immediately commit to the draft so the terrain card image refreshes
-      // even if the user closes the dialog without going through all tabs.
-      onCaptureCommit?.(next, newCapture);
+      const next = { ...f, ...p };
+      // Optimistically commit identity-tab changes (lockedZoom, address, …)
+      // so the parent terrain card thumbnail updates as the user works.
+      onChangeCommit?.(next);
       return next;
     });
-    setLocalCapture(newCapture);
   }
 
   const isIdentityValid =
@@ -138,7 +110,9 @@ export function TerrainEditorDialog({
     field.address.trim().length >= 5 &&
     field.lat !== 0 &&
     field.lng !== 0 &&
-    Boolean(localCapture);
+    field.lockedZoom != null &&
+    Boolean(field.sportType) &&
+    Boolean(field.iesClass);
   const isPerimeterValid =
     (field.perimeter?.length ?? 0) >= 3 && field.surfaceM2 > 0;
   const isPolesValid = field.poles.length >= 1;
@@ -194,8 +168,7 @@ export function TerrainEditorDialog({
   function handleNext() {
     if (!currentTabValid) return;
     if (isLastTab) {
-      // Final: save and close
-      onSave(field, localCapture);
+      onSave(field);
       return;
     }
     setTab(TAB_ORDER[currentTabIndex + 1]!);
@@ -203,9 +176,7 @@ export function TerrainEditorDialog({
 
   return (
     <div className="fixed inset-0 z-[60] bg-black flex flex-col">
-      {/* Single-row header: close + title (left) + tabs (center) + actions (right) */}
       <header className="flex items-center gap-4 px-4 py-3 border-b border-white/10 bg-black shrink-0">
-        {/* Left: close + title */}
         <div className="flex items-center gap-2 min-w-0 shrink-0">
           <Button
             type="button"
@@ -222,7 +193,6 @@ export function TerrainEditorDialog({
           </h2>
         </div>
 
-        {/* Center: tab navigation */}
         <nav
           role="tablist"
           className="flex items-center gap-1 flex-1 justify-center overflow-x-auto"
@@ -267,7 +237,6 @@ export function TerrainEditorDialog({
           })}
         </nav>
 
-        {/* Right: actions */}
         <div className="flex items-center gap-2 shrink-0">
           <Button
             type="button"
@@ -309,50 +278,45 @@ export function TerrainEditorDialog({
         {tab === "identity" ? (
           <IdentityTab
             value={field}
-            capture={localCapture}
             onChange={patch}
-            onCapture={handleCapture}
+            onAdvance={isIdentityValid ? handleNext : undefined}
           />
         ) : null}
         {tab === "perimeter" ? (
-          <PerimeterTab
-            value={field}
-            captureDataUrl={localCapture?.dataUrl ?? ""}
-            onChange={patch}
-            color={color}
-          />
+          <PerimeterTab value={field} onChange={patch} color={color} />
         ) : null}
         {tab === "poles" ? (
-          <PolesTab
-            value={field}
-            captureDataUrl={localCapture?.dataUrl ?? ""}
-            onChange={patch}
-            color={color}
-          />
+          <PolesTab value={field} onChange={patch} color={color} />
         ) : null}
         {tab === "configuration" ? (
-          <ConfigurationTab
-            value={field}
-            onChange={patch}
-            color={color}
-          />
+          <ConfigurationTab value={field} onChange={patch} color={color} />
         ) : null}
       </main>
     </div>
   );
 }
 
+/**
+ * Returns a blank field. Sport / IES are intentionally left unset so the
+ * Selects show their placeholders rather than a pre-picked default — the
+ * caller MUST validate that they were chosen before saving.
+ *
+ * We assert through the missing enums so the rest of the codebase keeps a
+ * strict `FieldValues` type; validation gates (`isIdentityValid`,
+ * `isFieldComplete`) ensure these are populated before downstream code
+ * (estimate, standards lookup) is reached.
+ */
 export function emptyField(): FieldValues {
   return {
     id: `f_${Math.random().toString(36).slice(2, 10)}`,
     name: "",
-    sportType: "SOCCER",
-    iesClass: "CLASS_IV",
+    sportType: undefined as unknown as FieldValues["sportType"],
+    iesClass: undefined as unknown as FieldValues["iesClass"],
     address: "",
     lat: 0,
     lng: 0,
     surfaceM2: 0,
     poles: [],
-    perimeter: [] as PolygonPoint[],
+    perimeter: [] as GeoPoint[],
   };
 }
