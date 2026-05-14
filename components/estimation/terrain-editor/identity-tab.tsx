@@ -124,7 +124,9 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
   }
 
   function lockView() {
-    const zoom = Math.max(1, Math.min(21, Math.round(camera.zoom)));
+    // Store the raw float zoom so the reloaded framing matches exactly what
+    // the user saw — rounding made the polygon overlay clip on re-open.
+    const zoom = Math.max(1, Math.min(21, camera.zoom));
     onChange({
       lat: camera.lat,
       lng: camera.lng,
@@ -152,9 +154,20 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
 
   return (
     <>
-      <div className="h-full grid grid-cols-1 lg:grid-cols-[380px_1fr] overflow-hidden">
-        {/* ─── LEFT: form sidebar ──────────────────────────────────────── */}
-        <aside className="border-r border-border bg-card/30 flex flex-col overflow-hidden">
+      {/*
+        Layout strategy:
+          - mobile: single scrollable column. Map (aspect-video, no fixed
+            height) on top, then the sidebar form flows below. Parent owns the
+            scroll; no nested scroll containers crushing each other.
+          - desktop (lg): 2-col grid. Sidebar fixed 380px left, map fills the
+            rest. Sidebar gets its own internal scroll.
+        flex-col-reverse on mobile + lg:grid puts the map first visually
+        without reshuffling DOM order (which keeps the sidebar header focused
+        for keyboard / screen readers).
+      */}
+      <div className="flex flex-col-reverse lg:h-full lg:overflow-hidden lg:grid lg:grid-cols-[380px_1fr]">
+        {/* ─── SIDEBAR — DOM 1; desktop column 1 (left); mobile bottom ── */}
+        <aside className="border-border bg-card/30 flex flex-col lg:border-r lg:overflow-hidden lg:min-h-0">
           <div className="p-6 border-b border-border space-y-3">
             <div className="space-y-1">
               <h3 className="text-2xl font-semibold">{t("title")}</h3>
@@ -171,9 +184,11 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
             </ol>
           </div>
 
-          <div className="p-6 space-y-4 overflow-y-auto flex-1">
-            {/* Address first — primary action */}
-            <div className="space-y-1.5">
+          <div className="p-6 space-y-4 lg:overflow-y-auto lg:flex-1">
+            {/* Address — visible only on desktop (mobile shows the address
+                input as a separate row pinned above the map; see bottom of
+                this component). */}
+            <div className="space-y-1.5 hidden lg:block">
               <Label>{t("address")}</Label>
               <AddressCombobox
                 defaultValue={value.address}
@@ -270,8 +285,12 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
           ) : null}
         </aside>
 
-        {/* ─── RIGHT: map fills full height ────────────────────────────── */}
-        <div className="relative bg-black overflow-hidden">
+        {/* ─── MAP — DOM 2; mobile top (flex-col-reverse); desktop right ──
+            Mobile: `h-[50vh]` + `shrink-0` so the map keeps its full height
+            even when the form sidebar below pushes the total content past
+            the viewport (flex children otherwise shrink by default).
+            Desktop: `lg:h-full` fills the grid row. */}
+        <div className="relative bg-black overflow-hidden w-full h-[50vh] shrink-0 lg:h-full lg:shrink">
           <Map
             defaultCenter={initialCenter}
             defaultZoom={initialZoom}
@@ -344,6 +363,18 @@ export function IdentityTab({ value, onChange, onAdvance }: IdentityTabProps) {
               {tStepper("lockView")}
             </Button>
           )}
+        </div>
+
+        {/* Mobile-only address bar — last in DOM so `flex-col-reverse` pins
+            it ABOVE the map on mobile. Hidden on desktop where the sidebar
+            already exposes the same combobox. */}
+        <div className="lg:hidden bg-card/30 border-b border-border p-4 space-y-1.5">
+          <Label>{t("address")}</Label>
+          <AddressCombobox
+            defaultValue={value.address}
+            placeholder={t("addressPh")}
+            onSelect={handleSelectPlace}
+          />
         </div>
       </div>
     </>

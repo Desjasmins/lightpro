@@ -8,7 +8,7 @@
  * latlng; clicking an existing marker opens the editor popup.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdvancedMarker, Map, useMap } from "@vis.gl/react-google-maps";
 import {
@@ -91,12 +91,16 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
   );
 
   const [editingId, setEditingId] = useState<string | null>(null);
+  // Suppresses the trailing "click" Google fires on drag mouseup, which would
+  // otherwise add a new pole right at the drop point of an existing one.
+  const draggingRef = useRef(false);
 
   const poles = value.poles;
   const perimeter = (value.perimeter ?? []) as GeoPoint[];
 
   const addPoleAt = useCallback(
     (point: GeoPoint) => {
+      if (draggingRef.current) return;
       const newPole: PoleValues = {
         id: genId(),
         index: poles.length + 1,
@@ -149,10 +153,12 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
   const editingPole = poles.find((p) => p.id === editingId);
   const center = { lat: value.lat, lng: value.lng };
 
+  // Same layout pattern as Perimeter: one scrollable column on mobile,
+  // 2-col grid with separate scrolls on desktop.
   return (
-    <div className="h-full grid grid-cols-1 lg:grid-cols-[1fr_380px] overflow-hidden">
-      {/* MAP — frozen satellite (same crosshair-cursor pattern as Perimeter) */}
-      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair [&_.gm-style_*]:!cursor-crosshair">
+    <div className="lg:h-full lg:overflow-hidden lg:grid lg:grid-cols-[1fr_380px]">
+      {/* MAP — frozen satellite. */}
+      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair w-full h-[50vh] lg:h-full">
         <Map
           defaultCenter={center}
           defaultZoom={value.lockedZoom}
@@ -190,16 +196,28 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
                 key={pole.id}
                 position={{ lat: pole.lat, lng: pole.lng }}
                 draggable
-                onClick={() => setEditingId(pole.id!)}
+                onClick={() => {
+                  if (draggingRef.current) return;
+                  setEditingId(pole.id!);
+                }}
+                onDragStart={() => {
+                  draggingRef.current = true;
+                }}
                 onDragEnd={(ev) => {
                   const ll = ev.latLng;
-                  if (!ll) return;
-                  patchPole(pole.id!, { lat: ll.lat(), lng: ll.lng() });
+                  if (ll) {
+                    patchPole(pole.id!, { lat: ll.lat(), lng: ll.lng() });
+                  }
+                  // Keep flag set briefly so the trailing map click event
+                  // (fired on drag mouseup) doesn't create a phantom pole.
+                  setTimeout(() => {
+                    draggingRef.current = false;
+                  }, 0);
                 }}
               >
                 <span
                   className={cn(
-                    "inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold text-black ring-1 transition-transform shadow",
+                    "inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold text-black ring-1 transition-transform shadow cursor-pointer active:cursor-grabbing",
                     isEditing
                       ? "ring-white scale-125"
                       : "ring-black/40 hover:scale-110",
@@ -223,7 +241,7 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
       </div>
 
       {/* SIDEBAR */}
-      <aside className="border-l border-border bg-card/30 flex flex-col overflow-hidden">
+      <aside className="lg:border-l border-border bg-card/30 flex flex-col lg:overflow-hidden lg:min-h-0">
         <div className="p-6 border-b border-border space-y-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             {t("stepLabel")}
@@ -231,7 +249,7 @@ export function PolesTab({ value, onChange, color }: PolesTabProps) {
           <h3 className="text-2xl font-semibold">{t("title")}</h3>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="lg:flex-1 lg:overflow-y-auto">
           <div className="p-6 pb-4 space-y-4">
             <div
               className="rounded-xl border p-4 space-y-2"

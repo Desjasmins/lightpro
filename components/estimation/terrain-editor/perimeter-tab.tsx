@@ -11,7 +11,7 @@
  * Surface is computed via spherical-excess formula (lib/estimation/geo.ts).
  */
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { AdvancedMarker, Map, useMap } from "@vis.gl/react-google-maps";
 import { Button } from "@/components/ui/button";
@@ -82,12 +82,28 @@ export function PerimeterTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surfaceM2, vertices.length]);
 
+  // When the user drags a vertex marker, Google fires a final "click" on
+  // mouseup at the drop point — which would add a NEW vertex right where they
+  // dropped. We swallow map clicks during/just-after a vertex drag.
+  const draggingRef = useRef(false);
+
   const handleMapClick = useCallback(
     (p: GeoPoint) => {
+      if (draggingRef.current) return;
       onChange({ perimeter: [...vertices, p] });
     },
     [vertices, onChange],
   );
+
+  function moveVertex(index: number, p: GeoPoint) {
+    onChange({
+      perimeter: vertices.map((v, i) => (i === index ? p : v)),
+    });
+  }
+
+  function removeVertex(index: number) {
+    onChange({ perimeter: vertices.filter((_, i) => i !== index) });
+  }
 
   function undo() {
     onChange({ perimeter: vertices.slice(0, -1) });
@@ -111,14 +127,18 @@ export function PerimeterTab({
   const isComplete = vertices.length >= 3;
   const center = { lat: value.lat, lng: value.lng };
 
+  // Layout: single scrollable column on mobile (map sized by aspect ratio,
+  // sidebar flows below in the same scroll); 2-col grid on desktop with
+  // separate internal scrolls.
   return (
-    <div className="h-full grid grid-cols-1 lg:grid-cols-[1fr_360px] overflow-hidden">
-      {/* MAP — frozen satellite. We set the cursor via two layers:
-            - Google Maps own `draggableCursor` option (applied to the inner
-              .gm-style canvas overlay)
-            - A Tailwind arbitrary selector that forces it on every descendant
-              for the few cases where Google's default cursor leaks through. */}
-      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair [&_.gm-style_*]:!cursor-crosshair">
+    <div className="lg:h-full lg:overflow-hidden lg:grid lg:grid-cols-[1fr_360px]">
+      {/* MAP — frozen satellite. Cursor strategy:
+            - `draggableCursor` / `draggingCursor` (Google API): sets the
+              cursor on the inner canvas overlay.
+            - `[&_.gm-style]:!cursor-crosshair` (Tailwind): forces crosshair
+              on the `.gm-style` root only — NOT on descendants, so vertex
+              markers can declare their own `cursor-pointer`. */}
+      <div className="relative bg-black overflow-hidden [&_.gm-style]:!cursor-crosshair w-full h-[50vh] lg:h-full">
         <Map
           defaultCenter={center}
           defaultZoom={value.lockedZoom}
@@ -144,20 +164,51 @@ export function PerimeterTab({
           />
           {vertices.map((p, i) => (
             <AdvancedMarker
-              key={`${i}-${p.lat}-${p.lng}`}
+              key={i}
               position={{ lat: p.lat, lng: p.lng }}
+              draggable
+              onDragStart={() => {
+                draggingRef.current = true;
+              }}
+              onDrag={(ev) => {
+                const ll = ev.latLng;
+                if (!ll) return;
+                moveVertex(i, { lat: ll.lat(), lng: ll.lng() });
+              }}
+              onDragEnd={(ev) => {
+                const ll = ev.latLng;
+                if (ll) moveVertex(i, { lat: ll.lat(), lng: ll.lng() });
+                // Keep the flag set briefly so the trailing map "click" event
+                // (which Google fires on drag mouseup) doesn't create a new
+                // vertex at the drop point.
+                setTimeout(() => {
+                  draggingRef.current = false;
+                }, 0);
+              }}
+              onClick={(ev) => {
+                // Right-clicking is awkward inside the canvas; for now, a
+                // shift-click removes a vertex. Plain click is no-op so the
+                // marker doesn't add a new one through map.click bubbling.
+                const domEv = ev.domEvent as MouseEvent | undefined;
+                if (domEv?.shiftKey) {
+                  removeVertex(i);
+                }
+              }}
             >
               <span
-                className="block w-3 h-3 rounded-full ring-2 ring-white shadow"
+                className="block w-3.5 h-3.5 rounded-full ring-2 ring-white shadow cursor-pointer active:cursor-grabbing"
                 style={{ background: color }}
+                title="Glisser pour repositionner · Maj+clic pour supprimer"
               />
             </AdvancedMarker>
           ))}
         </Map>
       </div>
 
-      {/* SIDEBAR — right column */}
-      <aside className="border-l border-border bg-card/30 flex flex-col overflow-hidden">
+      {/* SIDEBAR — right column (desktop) / below map (mobile). On mobile
+          we let the content flow naturally (parent handles scroll); on
+          desktop we hide overflow and let the inner content div scroll. */}
+      <aside className="lg:border-l border-border bg-card/30 flex flex-col lg:overflow-hidden lg:min-h-0">
         <div className="p-6 border-b border-border space-y-1">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             {t("stepLabel")}
@@ -165,7 +216,7 @@ export function PerimeterTab({
           <h3 className="text-2xl font-semibold">{t("title")}</h3>
         </div>
 
-        <div className="p-6 space-y-5 overflow-y-auto flex-1">
+        <div className="p-6 space-y-5 lg:overflow-y-auto lg:flex-1">
           <div
             className="rounded-xl border p-4 space-y-2"
             style={{ borderColor: `${color}66`, background: `${color}10` }}

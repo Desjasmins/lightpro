@@ -169,8 +169,12 @@ export const fieldSchema = z.object({
    * Map zoom level the user "froze" the view at. Once set, the perimeter and
    * poles tabs render a non-interactive Maps JS view at this zoom + the
    * field's lat/lng. Unset until the user clicks "Confirmer la vue".
+   *
+   * Stored as a float (Google Maps allows fractional zoom). Previously we
+   * `Math.round`-ed this value, which caused the reloaded framing to differ
+   * from what the user originally saw, sometimes clipping the polygon.
    */
-  lockedZoom: z.number().int().min(1).max(21).optional(),
+  lockedZoom: z.number().min(1).max(21).optional(),
   // Perimeter — polygon vertices in real-world lat/lng
   perimeter: z.array(geoPointSchema).optional(),
   surfaceM2: z.coerce.number().nonnegative("Must be ≥ 0").max(500000),
