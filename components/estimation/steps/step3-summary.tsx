@@ -87,6 +87,28 @@ export function Step3Summary({ draft, update, onNext, onPrev }: StepProps) {
         <p className="lb-lede text-base">{tStep("subtitle")}</p>
       </header>
 
+      {/* ─── Not-a-quote disclaimer (prominent, before the numbers) ─── */}
+      <div
+        role="note"
+        className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 flex gap-3"
+      >
+        <Info size={18} className="shrink-0 text-amber-400 mt-0.5" />
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-amber-100">
+            {tStep("notAQuoteTitle")}
+          </p>
+          <p className="text-xs leading-relaxed text-amber-50/80">
+            {tStep("notAQuoteLine1")}
+          </p>
+          <p className="text-xs leading-relaxed text-amber-50/80">
+            {tStep("notAQuoteLine2")}
+          </p>
+          <p className="text-xs leading-relaxed text-amber-50/80">
+            {tStep("notAQuoteLine3")}
+          </p>
+        </div>
+      </div>
+
       {/* ─── Overall verdict + HQ-OSE toggle ─── */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         {aggregateVerdict === "GO" ? (
@@ -163,11 +185,6 @@ export function Step3Summary({ draft, update, onNext, onPrev }: StepProps) {
           ))}
         </div>
       </section>
-
-      {/* ─── Disclaimer ─── */}
-      <p className="text-xs leading-relaxed text-muted-foreground border-l-2 border-border pl-4 whitespace-pre-line">
-        {tStep("disclaimer")}
-      </p>
 
       {/* ─── Nav ─── */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-4">

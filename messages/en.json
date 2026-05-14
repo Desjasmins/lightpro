@@ -331,7 +331,10 @@
         "Geotechnical, structural, environmental studies",
         "Taxes (GST / QST — shown separately)"
       ],
-      "disclaimer": "A detailed photometric study is required. Contact us to schedule a site visit (to perform the study) and receive a more accurate estimate.\n\nWe can also reach out to your local electrician for guidance on the budgetary evaluation.",
+      "notAQuoteTitle": "Budget estimate, not a quote",
+      "notAQuoteLine1": "An official quote is issued only after a full photometric study and an on-site survey.",
+      "notAQuoteLine2": "A detailed photometric study is required. Contact us to schedule a site visit (to perform the study) and receive a more accurate estimate.",
+      "notAQuoteLine3": "We can also reach out to your local electrician for guidance on the budgetary evaluation.",
       "continueToContact": "Receive report by email",
       "scenarioASubtitle": "Direct LED replacement of existing fixtures",
       "scenarioBSubtitle": "Per IES RP-6 standard for the activity",

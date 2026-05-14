@@ -117,11 +117,19 @@ const T = (locale: "fr" | "en") => ({
   contactMunicipality: locale === "en" ? "Municipality" : "Municipalité",
   contactName: locale === "en" ? "Contact" : "Contact",
   contactEmail: locale === "en" ? "Email" : "Courriel",
-  disclaimerLine1:
+  notAQuoteTitle:
+    locale === "en"
+      ? "Budget estimate, not a quote"
+      : "Estimation budgétaire, pas une soumission",
+  notAQuoteLine1:
+    locale === "en"
+      ? "An official quote is issued only after a full photometric study and an on-site survey."
+      : "Une soumission officielle est émise uniquement à la suite d'une étude photométrique complète et d'un relevé sur le terrain.",
+  notAQuoteLine2:
     locale === "en"
       ? "A detailed photometric study is required. Contact us to schedule a site visit (to perform the study) and receive a more accurate estimate."
       : "Une étude photométrique précise est requise. Contactez-nous pour planifier une visite (afin de réaliser l'étude) et obtenir une estimation plus précise.",
-  disclaimerLine2:
+  notAQuoteLine3:
     locale === "en"
       ? "We can also reach out to your local electrician for guidance on the budgetary evaluation."
       : "Nous pouvons également communiquer avec votre électricien local pour une orientation dans l'évaluation budgétaire.",
@@ -241,6 +249,62 @@ export function EstimationReport({
               }}
             >
               {t.intro}
+            </Text>
+          </Section>
+
+          {/* Not-a-quote banner: visible on both client and internal team
+              emails so the disclaimer travels with the report when it is
+              forwarded or printed. */}
+          <Section
+            style={{
+              marginTop: spacing.lg,
+              backgroundColor: "rgba(245, 158, 11, 0.08)",
+              border: `1px solid rgba(245, 158, 11, 0.35)`,
+              borderRadius: radii.md,
+              padding: spacing.md,
+            }}
+          >
+            <Text
+              style={{
+                margin: 0,
+                color: brand.amber,
+                fontSize: "12px",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                fontWeight: 600,
+              }}
+            >
+              {t.notAQuoteTitle}
+            </Text>
+            <Text
+              style={{
+                margin: `${spacing.xs} 0 0`,
+                color: brand.mist,
+                fontSize: "13px",
+                lineHeight: "1.5",
+              }}
+            >
+              {t.notAQuoteLine1}
+            </Text>
+            <Text
+              style={{
+                margin: `${spacing.sm} 0 0`,
+                color: brand.mist,
+                fontSize: "13px",
+                lineHeight: "1.5",
+              }}
+            >
+              {t.notAQuoteLine2}
+            </Text>
+            <Text
+              style={{
+                margin: `${spacing.sm} 0 0`,
+                color: brand.mist,
+                fontSize: "13px",
+                lineHeight: "1.5",
+              }}
+            >
+              {t.notAQuoteLine3}
             </Text>
           </Section>
 
@@ -391,38 +455,6 @@ export function EstimationReport({
               t={t}
             />
           ))}
-
-          {/* ─── Disclaimer ─── */}
-          <Section
-            style={{
-              marginTop: spacing.xxl,
-              padding: spacing.md,
-              backgroundColor: brand.ink2,
-              borderRadius: radii.md,
-              border: `1px solid ${brand.ink3}`,
-            }}
-          >
-            <Text
-              style={{
-                margin: 0,
-                color: brand.mist,
-                fontSize: "12px",
-                lineHeight: "1.6",
-              }}
-            >
-              {t.disclaimerLine1}
-            </Text>
-            <Text
-              style={{
-                margin: `${spacing.sm} 0 0`,
-                color: brand.mist,
-                fontSize: "12px",
-                lineHeight: "1.6",
-              }}
-            >
-              {t.disclaimerLine2}
-            </Text>
-          </Section>
 
           {/* ─── Footer ─── */}
           <Section style={{ marginTop: spacing.xl, textAlign: "center" }}>
