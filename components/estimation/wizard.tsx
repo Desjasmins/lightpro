@@ -9,7 +9,20 @@ import { Step4Contact } from "./steps/step4-contact";
 
 const TOTAL = 3;
 
-export function Wizard() {
+interface WizardProps {
+  /** Email pre-filled on the contact step from the gate cookie. */
+  prefillEmail?: string;
+  /** Display name pre-filled on the contact step from the gate cookie. */
+  prefillName?: string | null;
+  /** Organization pre-filled on the contact step's municipality field. */
+  prefillMunicipality?: string | null;
+}
+
+export function Wizard({
+  prefillEmail,
+  prefillName,
+  prefillMunicipality,
+}: WizardProps = {}) {
   const t = useTranslations("Estimation");
   const {
     draft,
@@ -64,6 +77,9 @@ export function Wizard() {
               update={update}
               onPrev={prev}
               onReset={reset}
+              prefillEmail={prefillEmail}
+              prefillName={prefillName}
+              prefillMunicipality={prefillMunicipality}
             />
           ) : null}
         </div>
