@@ -34,6 +34,12 @@ interface StepProps {
   update: (patch: Partial<EstimationDraft>) => void;
   onPrev: () => void;
   onReset: () => void;
+  /** Email known from the gate cookie. */
+  prefillEmail?: string;
+  /** Display name known from the gate cookie. */
+  prefillName?: string | null;
+  /** Organization known from the gate cookie (prefills municipality). */
+  prefillMunicipality?: string | null;
 }
 
 const contactFormSchema = projectStepSchema.extend({
@@ -55,6 +61,9 @@ export function Step4Contact({
   update,
   onPrev,
   onReset,
+  prefillEmail,
+  prefillName,
+  prefillMunicipality,
 }: StepProps) {
   const t = useTranslations("Estimation");
   const tStep = useTranslations("Estimation.step6");
@@ -81,9 +90,10 @@ export function Step4Contact({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: draft.project?.name ?? "",
-      municipality: draft.project?.municipality ?? "",
-      contactName: draft.project?.contactName ?? "",
-      contactEmail: draft.project?.contactEmail ?? "",
+      municipality: draft.project?.municipality ?? prefillMunicipality ?? "",
+      contactName: draft.project?.contactName ?? prefillName ?? "",
+      contactEmail: draft.project?.contactEmail ?? prefillEmail ?? "",
+      contactPhone: draft.project?.contactPhone ?? "",
       consent: false as unknown as true,
       requestQuote: false,
     },
@@ -96,6 +106,7 @@ export function Step4Contact({
         municipality: values.municipality,
         contactName: values.contactName,
         contactEmail: values.contactEmail,
+        contactPhone: values.contactPhone || undefined,
       };
       update({ project });
 
@@ -239,6 +250,32 @@ export function Step4Contact({
                       type="email"
                       placeholder={tStep("contactEmailPh")}
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>
+                    {tStep("contactPhone")}{" "}
+                    <span className="text-muted-foreground text-xs font-normal">
+                      ({tStep("optional")})
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="tel"
+                      placeholder={tStep("contactPhonePh")}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />

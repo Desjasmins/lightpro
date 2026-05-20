@@ -86,6 +86,7 @@ export const projectStepSchema = z.object({
   municipality: z.string().min(2, "Required").max(120),
   contactName: z.string().min(2, "Required").max(120),
   contactEmail: z.string().email("Invalid email"),
+  contactPhone: z.string().trim().max(40).optional(),
 });
 export type ProjectStepValues = z.infer<typeof projectStepSchema>;
 

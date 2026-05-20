@@ -117,6 +117,7 @@ const T = (locale: "fr" | "en") => ({
   contactMunicipality: locale === "en" ? "Municipality" : "Municipalité",
   contactName: locale === "en" ? "Contact" : "Contact",
   contactEmail: locale === "en" ? "Email" : "Courriel",
+  contactPhone: locale === "en" ? "Phone" : "Téléphone",
   notAQuoteTitle:
     locale === "en"
       ? "Budget estimate, not a quote"
@@ -346,6 +347,13 @@ export function EstimationReport({
                     value={project.contactEmail}
                     href={`mailto:${project.contactEmail}`}
                   />
+                  {project.contactPhone ? (
+                    <ContactRow
+                      label={t.contactPhone}
+                      value={project.contactPhone}
+                      href={`tel:${project.contactPhone.replace(/[^+\d]/g, "")}`}
+                    />
+                  ) : null}
                 </Column>
               </Row>
             </Section>
