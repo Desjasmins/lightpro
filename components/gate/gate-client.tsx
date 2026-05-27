@@ -176,16 +176,73 @@ export function GateClient({
     });
   };
 
-  const canSubmit =
-    !submitting &&
-    name.trim().length >= 2 &&
-    /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim()) &&
-    accepted &&
-    (turnstileSiteKey ? Boolean(turnstileToken) : true);
+  // ─── Field-level validation ────────────────────────────────────────────
+  type FieldKey = "name" | "email" | "accepted" | "turnstile";
+  const FIELD_ORDER: readonly FieldKey[] = [
+    "name",
+    "email",
+    "accepted",
+    "turnstile",
+  ];
+  const FIELD_ANCHORS: Record<FieldKey, string> = {
+    name: "gate-name",
+    email: "gate-email",
+    accepted: "gate-accept-card",
+    turnstile: "gate-turnstile",
+  };
+
+  const [fieldErrors, setFieldErrors] = React.useState<Set<FieldKey>>(
+    () => new Set(),
+  );
+
+  function validate(): Set<FieldKey> {
+    const errs = new Set<FieldKey>();
+    if (name.trim().length < 2) errs.add("name");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) errs.add("email");
+    if (!accepted) errs.add("accepted");
+    if (turnstileSiteKey && !turnstileToken) errs.add("turnstile");
+    return errs;
+  }
+
+  function clearFieldError(key: FieldKey) {
+    setFieldErrors((prev) => {
+      if (!prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+  }
+
+  function scrollToFirstError(errs: Set<FieldKey>) {
+    const firstInvalid = FIELD_ORDER.find((k) => errs.has(k));
+    if (!firstInvalid) return;
+    const el = document.getElementById(FIELD_ANCHORS[firstInvalid]);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Focus only the text inputs (avoids stealing focus from the checkbox
+    // card or the Turnstile iframe).
+    if (firstInvalid === "name" || firstInvalid === "email") {
+      setTimeout(() => {
+        const input = document.getElementById(
+          FIELD_ANCHORS[firstInvalid],
+        ) as HTMLInputElement | null;
+        input?.focus({ preventScroll: true });
+      }, 350);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (submitting) return;
+
+    const errs = validate();
+    if (errs.size > 0) {
+      setFieldErrors(errs);
+      scrollToFirstError(errs);
+      return;
+    }
+
+    setFieldErrors(new Set());
     setSubmitting(true);
     setSubmitError(null);
 
@@ -291,22 +348,9 @@ export function GateClient({
 
           <form
             onSubmit={handleSubmit}
+            noValidate
             className="rounded-2xl border border-border bg-card/40 p-6 sm:p-8 space-y-6 max-w-2xl"
           >
-            {/* Accept checkbox */}
-            <label className="flex items-start gap-3 cursor-pointer">
-              <Checkbox
-                id="gate-accept"
-                checked={accepted}
-                onCheckedChange={(v) => setAccepted(v === true)}
-                className="mt-0.5"
-              />
-              <span className="text-sm leading-relaxed">
-                {t("acceptCheckbox1")}{" "}
-                <strong>{t("acceptCheckbox2")}</strong>
-              </span>
-            </label>
-
             {/* Name */}
             <div className="space-y-1.5">
               <Label htmlFor="gate-name">
@@ -316,11 +360,26 @@ export function GateClient({
               <Input
                 id="gate-name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  clearFieldError("name");
+                }}
                 placeholder={t("namePh")}
                 autoComplete="name"
-                required
+                aria-invalid={fieldErrors.has("name")}
+                aria-describedby={
+                  fieldErrors.has("name") ? "gate-name-error" : undefined
+                }
               />
+              {fieldErrors.has("name") ? (
+                <p
+                  id="gate-name-error"
+                  className="text-xs text-destructive"
+                  role="alert"
+                >
+                  {t("errorNameRequired")}
+                </p>
+              ) : null}
             </div>
 
             {/* Email */}
@@ -333,11 +392,26 @@ export function GateClient({
                 id="gate-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearFieldError("email");
+                }}
                 placeholder={t("emailPh")}
                 autoComplete="email"
-                required
+                aria-invalid={fieldErrors.has("email")}
+                aria-describedby={
+                  fieldErrors.has("email") ? "gate-email-error" : undefined
+                }
               />
+              {fieldErrors.has("email") ? (
+                <p
+                  id="gate-email-error"
+                  className="text-xs text-destructive"
+                  role="alert"
+                >
+                  {t("errorEmailRequired")}
+                </p>
+              ) : null}
             </div>
 
             {/* Organization */}
@@ -382,14 +456,65 @@ export function GateClient({
               </Select>
             </div>
 
+            {/* Accept checkbox — wrapped in a high-contrast card so the box
+                is obvious and the error state stands out. */}
+            <div
+              id="gate-accept-card"
+              className={cn(
+                "rounded-lg border p-4 transition-colors",
+                fieldErrors.has("accepted")
+                  ? "border-destructive bg-destructive/10"
+                  : "border-foreground/25 bg-background/40",
+              )}
+            >
+              <label className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  id="gate-accept"
+                  checked={accepted}
+                  onCheckedChange={(v) => {
+                    const value = v === true;
+                    setAccepted(value);
+                    if (value) clearFieldError("accepted");
+                  }}
+                  aria-invalid={fieldErrors.has("accepted")}
+                  className="mt-0.5 size-5 border-foreground/60"
+                />
+                <span className="text-sm leading-relaxed">
+                  {t("acceptCheckbox1")}{" "}
+                  <strong>{t("acceptCheckbox2")}</strong>
+                </span>
+              </label>
+              {fieldErrors.has("accepted") ? (
+                <p
+                  className="mt-2 ml-8 text-xs text-destructive"
+                  role="alert"
+                >
+                  {t("errorAcceptRequired")}
+                </p>
+              ) : null}
+            </div>
+
             {/* Turnstile widget */}
             {turnstileSiteKey ? (
-              <div className="flex justify-start">
+              <div
+                id="gate-turnstile"
+                className={cn(
+                  "rounded-lg p-3 transition-colors",
+                  fieldErrors.has("turnstile")
+                    ? "border border-destructive bg-destructive/10"
+                    : "",
+                )}
+              >
                 <div ref={turnstileContainerRef} />
+                {fieldErrors.has("turnstile") ? (
+                  <p className="mt-2 text-xs text-destructive" role="alert">
+                    {t("errorTurnstileRequired")}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 
-            {/* Error */}
+            {/* Server-side / network error banner */}
             {submitError ? (
               <p
                 role="alert"
@@ -399,12 +524,20 @@ export function GateClient({
               </p>
             ) : null}
 
-            {/* Submit */}
+            {/* Submission summary when validation fails — surfaces the
+                count above the always-enabled submit button. */}
+            {fieldErrors.size > 0 ? (
+              <p className="text-sm text-destructive" role="alert">
+                {t("errorFormSummary")}
+              </p>
+            ) : null}
+
+            {/* Submit — always enabled. Validation happens on click. */}
             <Button
               type="submit"
               size="lg"
               className="rounded-full"
-              disabled={!canSubmit}
+              disabled={submitting}
             >
               {submitting ? (
                 <>
