@@ -18,12 +18,19 @@ export type LightproVariant = "300W" | "400W";
 /** Voltage tier — affects only the per-fixture price (+$30 for 347V). */
 export type LightproVoltageTier = "LV" | "HV"; // LV = 100-277 V, HV = 347 V
 
-/** Lightpro unit price (CAD) by variant and voltage tier. */
+/**
+ * Lightpro unit price (CAD) by variant and voltage tier.
+ *
+ * Base prices were uplifted by 15% on 2026-05-28 per Lightbase (luminaires
+ * only — accessories and poles untouched). The +30$ HV surcharge is applied
+ * after the uplift, as before.
+ */
 export function lightproPrice(
   variant: LightproVariant,
   tier: LightproVoltageTier,
 ): number {
-  const base = variant === "300W" ? 465 : 575;
+  // 300W: 465 × 1.15 = 534.75 ; 400W: 575 × 1.15 = 661.25
+  const base = variant === "300W" ? 534.75 : 661.25;
   return tier === "HV" ? base + 30 : base;
 }
 
@@ -84,8 +91,11 @@ export function controlPricePerLuminaire(
   }
 }
 
-/** Installation cost per luminaire (CAD), includes lifting equipment. */
-export const INSTALLATION_PER_LUMINAIRE = 205;
+/**
+ * Installation cost per luminaire (CAD), includes lifting equipment.
+ * Uplifted by 20% on 2026-05-28 per Lightbase: 205 × 1.20 = 246.
+ */
+export const INSTALLATION_PER_LUMINAIRE = 246;
 
 /** Junction box NEMA 18×18 (CAD). */
 export const JUNCTION_BOX_PRICE = 200;
