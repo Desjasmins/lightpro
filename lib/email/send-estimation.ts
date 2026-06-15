@@ -9,6 +9,7 @@ import { render } from "@react-email/components";
 import { Resend } from "resend";
 import { z } from "zod";
 import { EstimationReport } from "@/emails/EstimationReport";
+import { parseRecipients } from "@/lib/email/recipients";
 import type { ProjectEstimate } from "@/lib/estimation/estimate";
 import type { ProjectStepValues } from "@/lib/estimation/schema";
 
@@ -122,9 +123,9 @@ export async function sendEstimationEmail(
   }
 
   // ─── 2) Internal lead notice (best-effort) ───────────────────────────
-  const teamAddress = process.env.RESEND_BCC_EMAIL;
+  const teamAddresses = parseRecipients(process.env.RESEND_BCC_EMAIL);
   let internalId: string | undefined;
-  if (teamAddress) {
+  if (teamAddresses.length > 0) {
     try {
       const internalElement = EstimationReport({
         project: input.project,
@@ -153,7 +154,7 @@ export async function sendEstimationEmail(
 
       const { data: teamData, error: teamError } = await resend.emails.send({
         from,
-        to: [teamAddress],
+        to: teamAddresses,
         subject: internalSubject,
         html: internalHtml,
         text: internalText,

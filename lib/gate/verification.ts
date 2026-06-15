@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { Resend } from "resend";
 import { brand, fonts } from "@/emails/styles";
+import { parseRecipients } from "@/lib/email/recipients";
 
 /**
  * Gate verification helpers — OTP code generation, magic-link token sign /
@@ -683,8 +684,8 @@ export async function sendInternalAccessNotification(
     return { ok: true };
   }
 
-  const to = process.env.INTERNAL_NOTIFY_EMAIL;
-  if (!to) {
+  const to = parseRecipients(process.env.INTERNAL_NOTIFY_EMAIL);
+  if (to.length === 0) {
     return { ok: false, reason: "no_recipient_configured" };
   }
 
@@ -695,7 +696,7 @@ export async function sendInternalAccessNotification(
   const resend = new Resend(cfg.apiKey);
   const { data, error } = await resend.emails.send({
     from: cfg.from,
-    to: [to],
+    to,
     subject,
     html,
     text,
