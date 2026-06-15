@@ -40,14 +40,15 @@
   "Sectors": {
     "eyebrow": "FIELD TYPES",
     "title": "Built for your fields",
-    "football": "Football & track",
     "soccer": "Soccer",
+    "soccerAerial": "Soccer – aerial view",
+    "soccerPark": "Municipal soccer",
     "pickleball": "Pickleball",
-    "stadium": "Stadium & multi-fixture",
-    "golf": "Golf",
+    "pickleballPark": "Pickleball – park",
     "schoolFields": "School fields",
+    "schoolComplex": "School complex",
     "nightFields": "Multi-fields at night",
-    "arena": "Recreation arena"
+    "multiField": "Multi-field complex"
   },
   "CTA": {
     "title": "Estimate your project in 15 minutes",

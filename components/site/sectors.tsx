@@ -2,14 +2,15 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 const sectors = [
-  { key: "football", img: "/lightbase/lb-sector-football.jpg" },
-  { key: "soccer", img: "/lightbase/lb-sector-soccer.jpg" },
-  { key: "pickleball", img: "/lightbase/lb-sector-pickleball.jpg" },
-  { key: "stadium", img: "/lightbase/lb-sector-stadium.jpg" },
-  { key: "golf", img: "/lightbase/lb-sector-golf.jpg" },
-  { key: "schoolFields", img: "/lightbase/lb-sector-school-fields.jpg" },
-  { key: "nightFields", img: "/lightbase/lb-sector-night-fields.jpg" },
-  { key: "arena", img: "/lightbase/lb-sector-arena.jpg" },
+  { key: "soccer", img: "/lightbase/lb-sector-soccer.png" },
+  { key: "soccerAerial", img: "/lightbase/lb-sector-soccer-aerial.png" },
+  { key: "soccerPark", img: "/lightbase/lb-sector-soccer-park.png" },
+  { key: "pickleball", img: "/lightbase/lb-sector-pickleball.png" },
+  { key: "pickleballPark", img: "/lightbase/lb-sector-pickleball-park.png" },
+  { key: "schoolFields", img: "/lightbase/lb-sector-school-fields.png" },
+  { key: "schoolComplex", img: "/lightbase/lb-sector-school-complex.png" },
+  { key: "nightFields", img: "/lightbase/lb-sector-night-fields.png" },
+  { key: "multiField", img: "/lightbase/lb-sector-multi-field.png" },
 ] as const;
 
 export function Sectors() {
