@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section className="relative isolate min-h-[88vh] flex items-end overflow-hidden bg-black">
       <Image
-        src="/lightbase/lb-hero-fields-sunset.jpg"
+        src="/lightbase/lb-hero-fields-sunset.png"
         alt=""
         fill
         priority

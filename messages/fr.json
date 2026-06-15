@@ -40,14 +40,15 @@
   "Sectors": {
     "eyebrow": "TYPES DE TERRAINS",
     "title": "Pensé pour vos terrains",
-    "football": "Football & athlétisme",
     "soccer": "Soccer",
+    "soccerAerial": "Soccer – vue aérienne",
+    "soccerPark": "Soccer municipal",
     "pickleball": "Pickleball",
-    "stadium": "Stade & multi-projecteurs",
-    "golf": "Golf",
+    "pickleballPark": "Pickleball – parc",
     "schoolFields": "Terrains scolaires",
+    "schoolComplex": "Complexe scolaire",
     "nightFields": "Multi-terrains nocturne",
-    "arena": "Aréna récréative"
+    "multiField": "Complexe multi-terrains"
   },
   "CTA": {
     "title": "Estimez votre projet en 15 minutes",
