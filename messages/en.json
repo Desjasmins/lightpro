@@ -62,7 +62,8 @@
     "rights": "All rights reserved.",
     "privacy": "Privacy policy (Law 25)",
     "terms": "Terms of use",
-    "dataRequest": "Data access / deletion request"
+    "dataRequest": "Data access / deletion request",
+    "allProducts": "All our products"
   },
   "TerrainEditor": {
     "newField": "New field",
