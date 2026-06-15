@@ -4,6 +4,12 @@ import { Link } from "@/i18n/navigation";
 
 const LIGHTBASE_URL = "https://www.lightbase.ca/";
 
+// Standalone Lightbase solutions page (LightPro OM, Cléos, Lumio Air).
+// Override via NEXT_PUBLIC_SOLUTIONS_URL once it moves behind HTTPS.
+const SOLUTIONS_URL =
+  process.env.NEXT_PUBLIC_SOLUTIONS_URL ??
+  "http://lightbase-solutions.s3-website.ca-central-1.amazonaws.com";
+
 export function SiteFooter() {
   const t = useTranslations("Footer");
   const year = new Date().getFullYear();
@@ -41,6 +47,14 @@ export function SiteFooter() {
           <Link href="/estimation" className="text-white/72 hover:text-white">
             Estimation
           </Link>
+          <a
+            href={SOLUTIONS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/72 hover:text-white"
+          >
+            {t("allProducts")}
+          </a>
         </nav>
 
         <nav className="md:col-span-4 grid grid-cols-1 gap-3 text-sm">

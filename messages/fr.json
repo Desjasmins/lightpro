@@ -62,7 +62,8 @@
     "rights": "Tous droits réservés.",
     "privacy": "Politique de confidentialité (Loi 25)",
     "terms": "Conditions d'utilisation",
-    "dataRequest": "Demande d'accès / suppression"
+    "dataRequest": "Demande d'accès / suppression",
+    "allProducts": "Toutes nos solutions"
   },
   "TerrainEditor": {
     "newField": "Nouveau terrain",
